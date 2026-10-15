@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landscaping Customer Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Landscaping Customer Portal</h1>
+    <!-- JavaScript displays status and error messages here. -->
+    <p id="message" role="status" aria-live="polite"></p>
+    <section id="login-section">
+        <h2>Log in</h2>
+        <form id="login-form">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="username" maxlength="254" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" minlength="12" maxlength="128" required>
+            <button id="login-button" type="submit">Log in</button>
+        </form>
+    </section>
+    <!-- Hidden until the user logs in. The API also enforces authorization. -->
+    <section id="dashboard" hidden>
+        <h2 id="welcome"></h2>
+        <h3>Your appointments</h3>
+        <ul id="appointment-list"></ul>
+        <button id="refresh-button" type="button">Refresh appointments</button>
+        <button id="load-more-button" type="button" hidden>Load more appointments</button>
+        <button id="logout-button" type="button">Log out</button>
+    </section>
+    <noscript><p>Please enable JavaScript to use the customer portal.</p></noscript>
+    <script>
+        // Tokens stay in memory. Reloading the page requires another login.
+        let accessToken = null;
+        let currentPage = 0;
+        const loginForm = document.querySelector("#login-form");
+        const loginSection = document.querySelector("#login-section");
+        const loginButton = document.querySelector("#login-button");
+        const dashboard = document.querySelector("#dashboard");
+        const welcome = document.querySelector("#welcome");
+        const message = document.querySelector("#message");
+        const appointmentList = document.querySelector("#appointment-list");
+        const refreshButton = document.querySelector("#refresh-button");
+        const loadMoreButton = document.querySelector("#load-more-button");
+        const logoutButton = document.querySelector("#logout-button");
+        const emailInput = document.querySelector("#email");
+        const passwordInput = document.querySelector("#password");
+
+        function showMessage(text) {
+            message.textContent = text;
+        }
+        function showLogin() {
+            accessToken = null;
+            currentPage = 0;
+            loginSection.hidden = false;
+            dashboard.hidden = true;
+            loadMoreButton.hidden = true;
+            appointmentList.replaceChildren();
+            welcome.textContent = "";
+            passwordInput.value = "";
+            emailInput.focus();
+        }
+        // Shared helper for JSON requests to our Flask API.
+        async function apiRequest(path, options = {}) {
+            const headers = { ...options.headers };
+            if (options.body !== undefined) {
+                headers["Content-Type"] = "application/json";
+            }
+            if (accessToken) {
+                headers["Authorization"] = `Bearer ${accessToken}`;
+            }
+            let response;
+            try {
+                response = await fetch(`/api${path}`, { ...options, headers });
+            } catch {
+                throw new Error("Cannot connect to the server. Check your connection and try again.");
+            }
+            if (response.status === 401) showLogin();
+            let result;
+            try {
+                result = await response.json();
+            } catch {
+                throw new Error("The server returned an unexpected response. Please try again.");
+            }
+            if (!response.ok) {
+                throw new Error(result.error?.message || "The request failed.");
+            }
+            return result.data;
+        }
+        function createAppointmentItem(appointment) {
+            const item = document.createElement("li");
+            const title = document.createElement("strong");
+            title.textContent = `Appointment #${appointment.id}`;
+            const date = document.createElement("div");
+            date.textContent = `Date: ${new Date(appointment.starts_at).toLocaleString()}`;
+            const status = document.createElement("div");
+            const statusLabel = appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1);
+            status.textContent = `Status: ${statusLabel}`;
+            const price = document.createElement("div");
+            price.textContent = `Quoted price: ${new Intl.NumberFormat("en-US", {
+                style: "currency", currency: "USD"
+            }).format(Number(appointment.quoted_price))}`;
+            // textContent prevents API values from being interpreted as HTML.
+            item.append(title, date, status, price);
+            if (appointment.notes) {
+                const notes = document.createElement("div");
+                notes.textContent = `Notes: ${appointment.notes}`;
+                item.appendChild(notes);
+            }
+            return item;
+        }
+        async function loadAppointments(reset = true) {
+            refreshButton.disabled = true;
+            loadMoreButton.disabled = true;
+            logoutButton.disabled = true;
+            const requestedPage = reset ? 1 : currentPage + 1;
+            try {
+                const data = await apiRequest(`/appointments?page=${requestedPage}&per_page=20`);
+                if (reset) appointmentList.replaceChildren();
+                if (reset && data.items.length === 0) {
+                    const item = document.createElement("li");
+                    item.textContent = "You have no appointments yet.";
+                    appointmentList.appendChild(item);
+                }
+                for (const appointment of data.items) {
+                    appointmentList.appendChild(createAppointmentItem(appointment));
+                }
+                currentPage = requestedPage;
+                loadMoreButton.hidden = !data.has_more;
+            } finally {
+                refreshButton.disabled = false;
+                loadMoreButton.disabled = false;
+                logoutButton.disabled = false;
+            }
+        }
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            loginButton.disabled = true;
+            loginButton.textContent = "Logging in…";
+            showMessage("Logging in…");
+            try {
+                const data = await apiRequest("/auth/login", {
+                    method: "POST",
+                    body: JSON.stringify({ email: emailInput.value.trim(), password: passwordInput.value })
+                });
+                accessToken = data.access_token;
+                passwordInput.value = "";
+                welcome.textContent = `Welcome, ${data.user.first_name}!`;
+                loginSection.hidden = true;
+                dashboard.hidden = false;
+                showMessage("Loading your appointments…");
+                await loadAppointments(true);
+                showMessage("");
+            } catch (error) {
+                showMessage(error.message);
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = "Log in";
+            }
+        });
+        refreshButton.addEventListener("click", async function () {
+            showMessage("Refreshing appointments…");
+            try {
+                await loadAppointments(true);
+                showMessage("Appointments updated.");
+            } catch (error) { showMessage(error.message); }
+        });
+        loadMoreButton.addEventListener("click", async function () {
+            showMessage("Loading more appointments…");
+            try {
+                await loadAppointments(false);
+                showMessage("");
+            } catch (error) { showMessage(error.message); }
+        });
+        logoutButton.addEventListener("click", async function () {
+            logoutButton.disabled = true;
+            refreshButton.disabled = true;
+            loadMoreButton.disabled = true;
+            showMessage("Logging out…");
+            try {
+                await apiRequest("/auth/logout", { method: "POST", body: JSON.stringify({}) });
+                showLogin();
+                showMessage("You are logged out.");
+            } catch (error) {
+                showMessage(error.message);
+            } finally {
+                logoutButton.disabled = false;
+                refreshButton.disabled = false;
+                loadMoreButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
