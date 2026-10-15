@@ -8,7 +8,6 @@
 </head>
 <body>
     <h1>Landscaping Customer Portal</h1>
-    <!-- JavaScript displays status and error messages here. -->
     <p id="message" role="status" aria-live="polite"></p>
     <section id="login-section">
         <h2>Log in</h2>
@@ -20,7 +19,6 @@
             <button id="login-button" type="submit">Log in</button>
         </form>
     </section>
-    <!-- Hidden until the user logs in. The API also enforces authorization. -->
     <section id="dashboard" hidden>
         <h2 id="welcome"></h2>
         <h3>Your appointments</h3>
@@ -31,7 +29,6 @@
     </section>
     <noscript><p>Please enable JavaScript to use the customer portal.</p></noscript>
     <script>
-        // Tokens stay in memory. Reloading the page requires another login.
         let accessToken = null;
         let currentPage = 0;
         const loginForm = document.querySelector("#login-form");
@@ -61,7 +58,6 @@
             passwordInput.value = "";
             emailInput.focus();
         }
-        // Shared helper for JSON requests to our Flask API.
         async function apiRequest(path, options = {}) {
             const headers = { ...options.headers };
             if (options.body !== undefined) {
@@ -101,7 +97,6 @@
             price.textContent = `Quoted price: ${new Intl.NumberFormat("en-US", {
                 style: "currency", currency: "USD"
             }).format(Number(appointment.quoted_price))}`;
-            // textContent prevents API values from being interpreted as HTML.
             item.append(title, date, status, price);
             if (appointment.notes) {
                 const notes = document.createElement("div");
