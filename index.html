@@ -18,6 +18,7 @@
             <input type="password" id="password" name="password" autocomplete="current-password" minlength="12" maxlength="128" required>
             <button id="login-button" type="submit">Log in</button>
         </form>
+        <p>Don't have an account?<a href="{{ url_for('register') }}">Create an account</a></p>
     </section>
     <section id="dashboard" hidden>
         <h2 id="welcome"></h2>
