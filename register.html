@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create an Account | Landscaping Customer Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Landscaping Customer Portal</h1>
+    <p>Create an account to get started.</p>
+    <section>
+        <h2>Register</h2>
+        <form id="register-form">
+            <label for="first">First name</label>
+            <input type="text" id="first" name="first" autocomplete="first" maxlength="100" required>
+            <label for="last">Last name</label>
+            <input type="text" id="last" name="last" autocomplete="last" maxlength="100" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" maxlength="254" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+            <label for="confirm-password">Confirm password</label>
+            <input type="password" id="confirm-password" name="confirm_password" autocomplete="new-password" minlength="12" maxlength="128" required>
+            <button type="submit">Create Account</button>
+        </form>
+        <p>
+            Already have an account?
+            <a href="{{ url_for('index') }}">Log in</a>
+        </p>
+    </section>
+</body>
+</html>

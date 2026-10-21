@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Universal Power Washing</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <!--
+            All unfinished pages that don't have a proper link yet
+            have been replaced by links that send users back to homepage.
+        -->
+        <a class="logo" href="{{ url_for('home') }}">Universal Power Washing</a>
+        <nav aria-label="Main navigation">
+            <a href="{{ url_for('home') }}">Services</a>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('home') }}">Schedule an appointment</a>
+            {% else %}
+                <a class="login-link" href="{{ url_for('index') }}">Schedule an appointment</a>
+            {% endif %}
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('home') }}">Profile</a>
+            {% else %}
+                <a class="login-link" href="{{ url_for('index') }}">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>Welcome to Universal Power Washing</h1>
+            <p>A simple, organized space to manage your appointments and keep your day running smoothly.</p>
+            <a class="primary-button" href="{{ url_for('home') }}">Schedule an Appointment</a>
+        </section>
+        <div class="features" id="features">
+            <section>
+                <h2>Manage Appointments</h2>
+                <p>Keep track of your upcoming appointments in one place.</p>
+            </section>
+            <section>
+                <h2>Our Services</h2>
+                <p>Explore our power washing services and find the right solution for your property.</p>
+                <a href="{{ url_for('home') }}">View Services</a>
+            </section>
+        </div>
+        <section id="about" class="about">
+            <h2>Simple Scheduling Starts Here</h2>
+            <p>Spend less time organizing and more time focusing on what matters.</p>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('home') }}">Schedule an appointment</a>
+            {% else %}
+                <a class="login-link" href="{{ url_for('index') }}">Schedule an appointment</a>
+            {% endif %}
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 Universal Power Washing. All rights reserved.</p>
+    </footer>
+</body>
+</html>
