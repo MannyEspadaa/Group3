@@ -149,7 +149,7 @@ def logout():
     session.clear()
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.is_json:
         return jsonify({'success': True, 'message': 'Logged out successfully.'})
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
