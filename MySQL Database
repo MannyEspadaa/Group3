@@ -1,49 +1,41 @@
-CREATE TABLE CUSTOMER
-(
-CustomerID int(20) not null,
-Username varchar(20) not null, 
-Password varchar(20) not null, 
-Email varchar(50) not null, 
-FirstName varchar(25) not null,
-LastName varchar(25) not null, 
-PhoneNumber int(11), 
-Address varchar(30), 
-City varchar(25), 
-State varchar(2),
-Constraint CustomerPK primary key(CustomerID)
-);
+CREATE TABLE CUSTOMER(
+  CustomerID int(20) not null,
+  Username varchar(255) not null, 
+  Password varchar(255) not null, 
+  Email varchar(50) not null, 
+  FirstName varchar(25) not null,
+  LastName varchar(25) not null, 
+  PhoneNumber int(11), 
+  Address varchar(30), 
+  City varchar(25), 
+  State varchar(2),
+  Constraint CustomerPK primary key(CustomerID));
 
-CREATE TABLE ADMIN
-(
-AdminID int(20) not null,
-Username varchar(20) not null, 
-Password varchar(20) not null, 
-Email varchar(50) not null, 
-FirstName varchar(25) not null,
-LastName varchar(25) not null, 
-Constraint AdminPK primary key(AdminID)
-);
+CREATE TABLE ADMIN(
+  AdminID int(20) not null,
+  Username varchar(255) not null, 
+  Password varchar(255) not null, 
+  Email varchar(50) not null, 
+  FirstName varchar(25) not null,
+  LastName varchar(25) not null, 
+  Constraint AdminPK primary key(AdminID));
 
-CREATE TABLE SERVICE
-(
-ServiceID int(20) not null,
-Name varchar(30) not null,
-Description varchar(200), 
-Type varchar(50) not null,
-Constraint ServicePK primary key(ServiceID)
-);
+CREATE TABLE SERVICE(
+  ServiceID int(20) not null,
+  Name varchar(30) not null,
+  Description varchar(200), 
+  Type varchar(50) not null,
+  Constraint ServicePK primary key(ServiceID));
 
-CREATE TABLE REQUEST
-(
-RequestID int(20) not null, 
-CustomerID int(20) not null,
-ServiceID int(20) not null,
-Date DATE not null, 
-Time varchar(5) not null, 
-Address varchar(30), 
-City varchar(25), 
-State varchar(2),
-Constraint RequestPK primary key(RequestID),
-Constraint RequestFK foreign key(CustomerID) references CUSTOMER(CustomerID),
-Constraint RequestFK foreign key(ServiceID) references SERVICE(ServiceID)
-);
+CREATE TABLE REQUEST(
+  RequestID int(20) not null, 
+  CustomerID int(20) not null,
+  ServiceID int(20) not null,
+  Date DATE not null, 
+  Time varchar(5) not null, 
+  Address varchar(30), 
+  City varchar(25), 
+  State varchar(2),
+  Constraint RequestPK primary key(RequestID),
+  Constraint RequestFK foreign key(CustomerID) references CUSTOMER(CustomerID),
+  Constraint RequestFK foreign key(ServiceID) references SERVICE(ServiceID));
