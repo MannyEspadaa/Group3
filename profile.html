@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+    <h1>My Profile</h1>
+    <p>View and manage your customer account information.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p id="message" role="status">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <section>
+        <h2>Account Information</h2>
+        <form action="{{ url_for('update_profile') }}" method="POST">
+            <label for="first-name">First Name</label>
+            <input type="text" id="first-name" name="FirstName" value="{{ customer.FirstName }}" maxlength="25" autocomplete="given-name" required>
+
+            <label for="last-name">Last Name</label>
+            <input type="text" id="last-name" name="LastName" value="{{ customer.LastName }}" maxlength="25" autocomplete="family-name" required>
+
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="Email" value="{{ customer.Email }}" maxlength="50" autocomplete="email" required>
+
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="PhoneNumber" value="{{ customer.PhoneNumber or '' }}" autocomplete="tel">
+
+            <label for="address">Street Address</label>
+            <input type="text" id="address" name="Address" value="{{ customer.Address or '' }}" maxlength="30" autocomplete="street-address">
+
+            <label for="city">City</label>
+            <input type="text" id="city" name="City" value="{{ customer.City or '' }}" maxlength="25" autocomplete="address-level2">
+
+            <label for="state">State</label>
+            <input type="text" id="state" name="State" value="{{ customer.State or '' }}" maxlength="2" pattern="[A-Za-z]{2}" title="Enter a two-letter state abbreviation." autocomplete="address-level1">
+
+            <button type="submit">Save Changes</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Change Password</h2>
+        <p>Update your password to help keep your account secure.</p>
+
+        <form action="{{ url_for('change_password') }}" method="POST">
+            <label for="current-password">Current Password</label>
+            <input type="password" id="current-password" name="current_password" autocomplete="current-password" required>
+
+            <label for="new-password">New Password</label>
+            <input type="password" id="new-password" name="new_password" minlength="8" autocomplete="new-password" required>
+
+            <label for="confirm-password">Confirm New Password</label>
+            <input type="password" id="confirm-password" name="confirm_password" minlength="8" autocomplete="new-password" required>
+
+            <button type="submit">Update Password</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Account Actions</h2>
+        <p>Finished managing your profile?</p>
+
+        <form action="{{ url_for('logout') }}" method="POST">
+            <button type="submit" id="logout-button">Log Out</button>
+        </form>
+    </section>
+</body>
+</html>
