@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile</title>
+    <title>My Profile | Universal Power Washing</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-    <a href="{{ url_for('home') }}">Back to Home</a>
-    <h1>My Profile</h1>
-    <p>View and manage your customer account information.</p>
 
+<body>
+    <a href="{{ url_for('home') }}">← Back to Home</a>
+    <h1>My Profile</h1>
+    <p>View and manage your Universal Power Washing account information.</p>
+    
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -19,7 +20,8 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-
+    
+    <!-- Account Information -->
     <section>
         <h2>Account Information</h2>
         <form action="{{ url_for('update_profile') }}" method="POST">
@@ -47,11 +49,10 @@
             <button type="submit">Save Changes</button>
         </form>
     </section>
-
+    <!-- Change Password -->
     <section>
         <h2>Change Password</h2>
         <p>Update your password to help keep your account secure.</p>
-
         <form action="{{ url_for('change_password') }}" method="POST">
             <label for="current-password">Current Password</label>
             <input type="password" id="current-password" name="current_password" autocomplete="current-password" required>
@@ -65,11 +66,10 @@
             <button type="submit">Update Password</button>
         </form>
     </section>
-
+    <!-- Account Actions -->
     <section>
         <h2>Account Actions</h2>
         <p>Finished managing your profile?</p>
-
         <form action="{{ url_for('logout') }}" method="POST">
             <button type="submit" id="logout-button">Log Out</button>
         </form>
