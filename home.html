@@ -7,58 +7,117 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-    <header>
-        <!--
-            All unfinished pages that don't have a proper link yet
-            have been replaced by links that send users back to homepage.
-        -->
-        <a class="logo" href="{{ url_for('home') }}">Universal Power Washing</a>
-        <nav aria-label="Main navigation">
-            <a href="{{ url_for('home') }}">Services</a>
-            {% if session.get('user_id') %}
-                <a href="{{ url_for('home') }}">Schedule an appointment</a>
-            {% else %}
-                <a class="login-link" href="{{ url_for('index') }}">Schedule an appointment</a>
-            {% endif %}
 
+<body>
+    <!-- Navigation -->
+    <header class="home-header">
+        <a class="home-logo" href="{{ url_for('home') }}">Universal Power Washing</a>
+        <nav aria-label="Main navigation">
+            <a class="active" href="{{ url_for('home') }}">Home</a>
+            <a href="#services">Our Services</a>
             {% if session.get('user_id') %}
                 <a href="{{ url_for('profile') }}">Profile</a>
                 <a href="{{ url_for('logout') }}">Log out</a>
             {% else %}
-                <a class="login-link" href="{{ url_for('index') }}">Login</a>
+                <a class="login-link" href="{{ url_for('index') }}">Log in</a>
+            {% endif %}
+
+            {% if session.get('user_id') %}
+                <a class="nav-button" href="{{ url_for('home') }}">Request Work <span>→</span></a>
+            {% else %}
+                <a class="nav-button" href="{{ url_for('index') }}">Request Work <span>→</span></a>
             {% endif %}
         </nav>
     </header>
     <main>
-        <section class="hero">
-            <h1>Welcome to Universal Power Washing</h1>
-            <p>A simple, organized space to manage your appointments and keep your day running smoothly.</p>
-            <a class="primary-button" href="{{ url_for('home') }}">Schedule an Appointment</a>
+        <!-- Hero Section -->
+        <section class="home-hero">
+            <div class="hero-content">
+                <span class="eyebrow">PROPERTY CARE, MADE EASY</span>
+                <h1>Cleaner spaces.<br>
+                    Less to manage.</h1>
+                <p>Powerwashing, yard cleanup, junk removal, and home improvement—handled with care.</p>
+                <div class="hero-buttons">
+                    {% if session.get('user_id') %}
+                        <a class="primary-button" href="{{ url_for('home') }}">Request Work <span>→</span></a>
+                    {% else %}
+                        <a class="primary-button" href="{{ url_for('index') }}">Request Work <span>→</span></a>
+                    {% endif %}
+                    <a class="secondary-button" href="#services">Explore Our Services</a>
+                </div>
+                <div class="hero-note">
+                    <span>✓</span>Tell us what you need. We'll get back to you with a free quote.</div>
+            </div>
+            <!-- Logo placeholder -->
+            <div class="hero-image-placeholder">
+                <div class="placeholder-content">
+                    <span class="placeholder-icon">✦</span>
+                    <h2>Universal</h2>
+                    <h3>POWER WASHING</h3>
+                    <p>Fully Insured</p>
+                </div>
+            </div>
         </section>
-        <div class="features" id="features">
-            <section>
-                <h2>Manage Appointments</h2>
-                <p>Keep track of your upcoming appointments in one place.</p>
-            </section>
-            <section>
-                <h2>Our Services</h2>
-                <p>Explore our power washing services and find the right solution for your property.</p>
-                <a href="{{ url_for('home') }}">View Services</a>
-            </section>
-        </div>
-        <section id="about" class="about">
-            <h2>Simple Scheduling Starts Here</h2>
-            <p>Spend less time organizing and more time focusing on what matters.</p>
+        <!-- Services Section -->
+        <section class="services-section" id="services">
+            <div class="section-heading">
+                <h2>What We Do.</h2>
+                <p>One-off jobs or regular upkeep.</p>
+            </div>
+            <div class="services-grid">
+                <article class="service-card">
+                    <div class="service-icon">♨</div>
+                    <div class="service-content">
+                        <h3>Powerwashing</h3>
+                        <p>Clean surfaces, inside and out.</p>
+                        <span>Residential · Commercial</span>
+                    </div>
+                </article>
+                <article class="service-card">
+                    <div class="service-icon">♣</div>
+                    <div class="service-content">
+                        <h3>Yard Clean Up</h3>
+                        <p>Yard cleanup and maintenance made easy.</p>
+                        <span>Hedge Trimming · Garden Cleanups · Gutter Cleaning</span>
+                    </div>
+                </article>
+                <article class="service-card">
+                    <div class="service-icon">♧</div>
+                    <div class="service-content">
+                        <h3>Junk Removal</h3>
+                        <p>Fast, reliable junk removal.</p>
+                        <span>Bulk Pickup · Dump Trailer Delivery</span>
+                    </div>
+                </article>
+                <article class="service-card">
+                    <div class="service-icon">⌂</div>
+                    <div class="service-content">
+                        <h3>Home Improvement</h3>
+                        <p>Painting, cleaning, and maintenance to keep your home looking its best.</p>
+                        <span>Carpet Shampooing · Steam Cleaning · Painting · Maintenance</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+        <!-- Account Banner -->
+        <section class="account-banner">
+            <div>
+                <h2>Your requests, all in one place.</h2>
+                <p>Create an account to send work requests and keep track of them.</p>
+            </div>
             {% if session.get('user_id') %}
-                <a href="{{ url_for('home') }}">Schedule an appointment</a>
+                <a class="banner-button" href="{{ url_for('profile') }}">View Your Account <span>→</span></a>
             {% else %}
-                <a class="login-link" href="{{ url_for('index') }}">Schedule an appointment</a>
+                <a class="banner-button" href="{{ url_for('index') }}">Create an Account <span>→</span></a>
             {% endif %}
         </section>
     </main>
-    <footer>
-        <p>&copy; 2026 Universal Power Washing. All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="home-footer">
+        <div>
+            <strong>Universal Power Washing</strong>
+            <p>© 2026 Universal Power Washing. All rights reserved.</p>
+        </div>
     </footer>
 </body>
 </html>
