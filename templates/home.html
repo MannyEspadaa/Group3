@@ -19,13 +19,13 @@
                 <a href="{{ url_for('profile') }}">Profile</a>
                 <a href="{{ url_for('logout') }}">Log out</a>
             {% else %}
-                <a class="login-link" href="{{ url_for('index') }}">Log in</a>
+                <a class="login-link" href="{{ url_for('login') }}">Log in</a>
             {% endif %}
 
             {% if session.get('user_id') %}
                 <a class="nav-button" href="{{ url_for('home') }}">Request Work <span>→</span></a>
             {% else %}
-                <a class="nav-button" href="{{ url_for('index') }}">Request Work <span>→</span></a>
+                <a class="nav-button" href="{{ url_for('login') }}">Request Work <span>→</span></a>
             {% endif %}
         </nav>
     </header>
@@ -41,7 +41,7 @@
                     {% if session.get('user_id') %}
                         <a class="primary-button" href="{{ url_for('home') }}">Request Work <span>→</span></a>
                     {% else %}
-                        <a class="primary-button" href="{{ url_for('index') }}">Request Work <span>→</span></a>
+                        <a class="primary-button" href="{{ url_for('login') }}">Request Work <span>→</span></a>
                     {% endif %}
                     <a class="secondary-button" href="#services">Explore Our Services</a>
                 </div>
@@ -108,7 +108,7 @@
             {% if session.get('user_id') %}
                 <a class="banner-button" href="{{ url_for('profile') }}">View Your Account <span>→</span></a>
             {% else %}
-                <a class="banner-button" href="{{ url_for('index') }}">Create an Account <span>→</span></a>
+                <a class="banner-button" href="{{ url_for('login') }}">Create an Account <span>→</span></a>
             {% endif %}
         </section>
     </main>
