@@ -3,31 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create an Account | Landscaping Customer Portal</title>
+    <title>Create an Account | Universal Power Washing</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
-    <h1>Landscaping Customer Portal</h1>
-    <p>Create an account to get started.</p>
+    <h1>Universal Power Washing</h1>
+    <p>Create an account to get started with your service requests.</p>
     <section>
-        <h2>Register</h2>
-        <form id="register-form">
-            <label for="first">First name</label>
-            <input type="text" id="first" name="first" autocomplete="first" maxlength="100" required>
-            <label for="last">Last name</label>
-            <input type="text" id="last" name="last" autocomplete="last" maxlength="100" required>
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" autocomplete="email" maxlength="254" required>
+        <h2>Create an Account</h2>
+        {% if error %}<p role="alert">{{ error }}</p>{% endif %}
+        <form id="register-form" method="post" action="{{ url_for('register') }}">
+            <label for="first">First Name</label>
+            <input type="text" id="first" name="first" autocomplete="given-name" maxlength="25" required>
+
+            <label for="last">Last Name</label>
+            <input type="text" id="last" name="last" autocomplete="family-name" maxlength="25" required>
+
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" autocomplete="email" maxlength="50" required>
+
             <label for="password">Password</label>
             <input type="password" id="password" name="password" autocomplete="new-password" minlength="12" maxlength="128" required>
-            <label for="confirm-password">Confirm password</label>
+
+            <label for="confirm-password">Confirm Password</label>
             <input type="password" id="confirm-password" name="confirm_password" autocomplete="new-password" minlength="12" maxlength="128" required>
+
             <button type="submit">Create Account</button>
         </form>
-        <p>
-            Already have an account?
-            <a href="{{ url_for('index') }}">Log in</a>
-        </p>
+        <p>Already have an account? <a href="{{ url_for('index') }}">Log in</a></p>
     </section>
 </body>
 </html>
