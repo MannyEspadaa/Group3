@@ -1,59 +1,41 @@
-/* =================================
-   GLOBAL STYLES
-================================= */
-
+/* GLOBAL STYLES */
 * {
     box-sizing: border-box;
 }
-
 body {
     margin: 0;
     min-height: 100vh;
     padding: 0;
-    background-color: #f2f6f1;
-    color: #243b2a;
+    background-color: #f2f7fa;
+    color: #243849;
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
 }
-
 a {
-    color: #286b3e;
+    color: #347da3;
     text-decoration: none;
 }
-
 a:hover {
-    color: #1c502d;
+    color: #245b78;
 }
-
-
-/* =================================
-   HEADINGS
-================================= */
-
+/* HEADINGS */
 h1 {
     margin-top: 0;
     margin-bottom: 12px;
-    color: #245535;
+    color: #244e68;
     font-size: clamp(1.8rem, 5vw, 2.5rem);
     line-height: 1.2;
 }
-
 h2 {
     margin-top: 0;
     margin-bottom: 20px;
     font-size: 1.5rem;
 }
-
 h3 {
     margin-top: 24px;
     font-size: 1.1rem;
 }
-
-
-/* =================================
-   GENERAL LAYOUT
-================================= */
-
+/* GENERAL LAYOUT */
 body > h1,
 body > p,
 body > section,
@@ -64,59 +46,44 @@ noscript p {
     margin-left: auto;
     margin-right: auto;
 }
-
 body > h1 {
     margin-top: 48px;
 }
-
 body > p {
     margin-bottom: 20px;
 }
-
 section {
     margin: 0 auto 24px;
     max-width: 700px;
     padding: 32px;
     background-color: white;
-    border: 1px solid #dce6dc;
+    border: 1px solid #d7e5ed;
     border-radius: 16px;
-    box-shadow: 0 8px 24px rgb(36 59 42 / 6%);
+    box-shadow: 0 8px 24px rgb(36 56 73 / 6%);
 }
-
-
-/* =================================
-   FORMS
-================================= */
-
+/* FORMS */
 label {
     display: block;
     margin-top: 18px;
     margin-bottom: 6px;
     font-weight: 600;
 }
-
 input {
     display: block;
     width: 100%;
     padding: 12px 14px;
-    border: 1px solid #809584;
+    border: 1px solid #8caabd;
     border-radius: 8px;
     background-color: white;
-    color: #243b2a;
+    color: #243849;
     font: inherit;
 }
-
 input:focus-visible {
-    border-color: #287443;
-    outline: 3px solid #bddfc6;
+    border-color: #347da3;
+    outline: 3px solid #c5e0ef;
     outline-offset: 2px;
 }
-
-
-/* =================================
-   BUTTONS
-================================= */
-
+/* BUTTONS */
 button,
 .primary-button {
     display: inline-flex;
@@ -127,141 +94,107 @@ button,
     padding: 12px 20px;
     border: 1px solid transparent;
     border-radius: 8px;
-    background-color: #286b3e;
+    background-color: #347da3;
     color: white;
     font: inherit;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
-
 button:hover,
 .primary-button:hover {
-    background-color: #1c502d;
+    background-color: #245b78;
     color: white;
 }
-
 button:focus-visible,
 .primary-button:focus-visible {
-    outline: 3px solid #287443;
+    outline: 3px solid #347da3;
     outline-offset: 3px;
 }
-
 button:disabled {
-    background-color: #526858;
+    background-color: #526a78;
     cursor: wait;
 }
-
 #login-form button {
     width: 100%;
 }
-
 #logout-button {
     margin-left: 8px;
-    border-color: #809584;
+    border-color: #8caabd;
     background-color: white;
-    color: #245535;
+    color: #244e68;
 }
-
 #logout-button:hover {
-    background-color: #edf4ee;
+    background-color: #edf6fa;
 }
-
-
-/* =================================
-   MESSAGES
-================================= */
-
+/* MESSAGES */
 #message {
     margin-top: 0;
     margin-bottom: 20px;
     padding: 12px 16px;
-    border-left: 4px solid #287443;
+    border-left: 4px solid #347da3;
     border-radius: 6px;
-    background-color: #e4efe5;
+    background-color: #e5f1f8;
     overflow-wrap: anywhere;
 }
-
 #message:empty {
     display: none;
 }
-
-
-/* =================================
-   APPOINTMENTS
-================================= */
-
+/* APPOINTMENTS */
 #appointment-list {
     margin: 0;
     padding: 0;
     list-style: none;
 }
-
 #appointment-list li {
     margin-bottom: 12px;
     padding: 16px;
-    border: 1px solid #dce6dc;
-    border-left: 4px solid #39834e;
+    border: 1px solid #d7e5ed;
+    border-left: 4px solid #4b87a8;
     border-radius: 8px;
-    background-color: #f8fbf7;
+    background-color: #f7fbfd;
     overflow-wrap: anywhere;
 }
-
 [hidden] {
     display: none !important;
 }
-
-
-/* =================================
-   HOMEPAGE NAVIGATION
-================================= */
-
+/* HOMEPAGE NAVIGATION */
 .home-header {
     min-height: 68px;
     padding: 0 5.5%;
     background: white;
-    border-bottom: 1px solid #dce6dc;
+    border-bottom: 1px solid #d7e5ed;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
 }
-
 .home-logo {
     font-size: 17px;
     font-weight: 700;
-    color: #245535;
+    color: #244e68;
 }
-
 .home-header nav {
     display: flex;
     align-items: center;
     gap: 30px;
     font-size: 13px;
 }
-
 .home-header nav a {
-    color: #526858;
+    color: #526a78;
 }
-
 .home-header nav a:hover,
 .home-header nav .active {
-    color: #286b3e;
+    color: #347da3;
 }
-
 .home-header nav .nav-button {
     padding: 10px 17px;
-    background: #286b3e;
+    background: #347da3;
     color: white;
     border-radius: 5px;
     font-weight: 600;
 }
-
-
-/* =================================
-   HOMEPAGE HERO
-================================= */
-
+/* HOMEPAGE HERO */
 .home-hero {
     max-width: 1120px;
     margin: 0 auto;
@@ -274,106 +207,66 @@ button:disabled {
     border: none;
     box-shadow: none;
 }
-
 .eyebrow {
-    color: #39834e;
+    color: #4b87a8;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
-
 .hero-content h1 {
     margin: 15px 0;
-    color: #245535;
+    color: #244e68;
     font-size: clamp(34px, 4.5vw, 52px);
     line-height: 1.12;
     letter-spacing: -1px;
 }
-
 .hero-content > p {
     max-width: 450px;
-    color: #718073;
+    color: #708493;
     font-size: 15px;
 }
-
 .hero-buttons {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
 }
-
 .hero-buttons a {
     margin-top: 0;
 }
-
 .secondary-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-height: 43px;
     padding: 10px 17px;
-    border: 1px solid #dce6dc;
+    border: 1px solid #d7e5ed;
     border-radius: 6px;
     background: white;
-    color: #243b2a;
+    color: #243849;
     font-size: 13px;
     font-weight: 600;
 }
-
 .hero-note {
     margin-top: 18px;
-    color: #809080;
+    color: #8296a4;
     font-size: 11px;
 }
-
-
-/* =================================
-   HERO IMAGE PLACEHOLDER
-================================= */
-
+/* HERO IMAGE PLACEHOLDER */
 .hero-image-placeholder {
-    min-height: 300px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    border-radius: 12px;
-    background: #e3eee4;
-    text-align: center;
+    align-items: center;
+    overflow: hidden;
 }
-
-.placeholder-content {
-    padding: 30px;
-}
-
-.placeholder-icon {
+.hero-logo-image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    object-fit: contain;
     display: block;
-    color: #39834e;
-    font-size: 48px;
 }
-
-.placeholder-content h2 {
-    margin: 8px 0 0;
-    color: #245535;
-    font-size: 35px;
-}
-
-.placeholder-content h3 {
-    margin: 0;
-    color: #286b3e;
-    letter-spacing: 2px;
-}
-
-.placeholder-content p {
-    color: #39834e;
-    font-weight: 700;
-}
-
-
-/* =================================
-   HOMEPAGE SERVICES
-================================= */
-
+/* HOMEPAGE SERVICES */
 .services-section {
     max-width: 1120px;
     margin: 0 auto;
@@ -382,31 +275,26 @@ button:disabled {
     border: none;
     box-shadow: none;
 }
-
 .section-heading {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 18px;
 }
-
 .section-heading h2 {
     margin: 0;
-    color: #245535;
+    color: #244e68;
     font-size: 25px;
 }
-
 .section-heading p {
-    color: #809080;
+    color: #8296a4;
     font-size: 12px;
 }
-
 .services-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
 }
-
 .service-card {
     min-height: 125px;
     padding: 23px;
@@ -414,10 +302,9 @@ button:disabled {
     align-items: flex-start;
     gap: 17px;
     background: white;
-    border: 1px solid #dce6dc;
+    border: 1px solid #d7e5ed;
     border-radius: 10px;
 }
-
 .service-icon {
     width: 43px;
     height: 43px;
@@ -426,38 +313,30 @@ button:disabled {
     align-items: center;
     justify-content: center;
     border-radius: 9px;
-    background: #e8f0e9;
-    color: #39834e;
+    background: #e9f4fa;
+    color: #4b87a8;
     font-size: 22px;
 }
-
 .service-content h3 {
     margin: 0 0 5px;
-    color: #245535;
+    color: #244e68;
     font-size: 18px;
 }
-
 .service-content p {
     margin: 0 0 8px;
-    color: #809080;
+    color: #8296a4;
     font-size: 13px;
 }
-
 .service-content span {
-    color: #39834e;
+    color: #4b87a8;
     font-size: 11px;
     font-weight: 600;
 }
-
-
-/* =================================
-   HOMEPAGE ACCOUNT BANNER
-================================= */
-
+/* HOMEPAGE ACCOUNT BANNER */
 .account-banner {
     max-width: none;
     padding: 25px 5.5%;
-    background: #e4efe5;
+    background: #e5f1f8;
     border: none;
     border-radius: 0;
     box-shadow: none;
@@ -466,150 +345,112 @@ button:disabled {
     justify-content: space-between;
     gap: 20px;
 }
-
 .account-banner h2 {
     margin: 0 0 3px;
-    color: #245535;
+    color: #244e68;
     font-size: 19px;
 }
-
 .account-banner p {
     margin: 0;
-    color: #718073;
+    color: #708493;
     font-size: 12px;
 }
-
 .banner-button {
     flex-shrink: 0;
     padding: 12px 18px;
     background: white;
-    border: 1px solid #dce6dc;
+    border: 1px solid #d7e5ed;
     border-radius: 5px;
-    color: #245535;
+    color: #244e68;
     font-size: 12px;
     font-weight: 600;
 }
-
-
-/* =================================
-   HOMEPAGE FOOTER
-================================= */
-
+/* HOMEPAGE FOOTER */
 .home-footer {
     min-height: 80px;
     padding: 18px 5.5%;
     display: flex;
     align-items: center;
     background: white;
-    border-top: 1px solid #dce6dc;
+    border-top: 1px solid #d7e5ed;
 }
-
 .home-footer strong {
-    color: #245535;
+    color: #244e68;
     font-size: 12px;
 }
-
 .home-footer p {
     margin: 5px 0 0;
-    color: #809080;
+    color: #8296a4;
     font-size: 10px;
 }
-
-
-/* =================================
-   RESPONSIVE DESIGN
-================================= */
-
+/* RESPONSIVE DESIGN */
 @media (max-width: 750px) {
-
     body {
         padding: 28px 16px;
     }
-
     section {
         padding: 24px 20px;
     }
-
     .home-header {
         padding: 15px 5%;
         flex-wrap: wrap;
     }
-
     .home-header nav {
         width: 100%;
         flex-wrap: wrap;
         gap: 15px;
     }
-
     .home-hero {
         grid-template-columns: 1fr;
         gap: 30px;
         padding: 45px 6%;
     }
-
     .hero-image-placeholder {
         min-height: 230px;
     }
-
     .services-section {
         padding: 0 6% 30px;
     }
-
     .services-grid {
         grid-template-columns: 1fr;
     }
-
     .account-banner {
         padding: 25px 6%;
     }
-
     button {
         width: 100%;
     }
-
     #logout-button {
         margin-top: 12px;
         margin-left: 0;
     }
 }
-
 @media (max-width: 480px) {
-
     .home-header nav {
         gap: 12px;
         font-size: 12px;
     }
-
     .hero-content h1 {
         font-size: 36px;
     }
-
     .hero-buttons {
         align-items: stretch;
         flex-direction: column;
     }
-
     .section-heading {
         align-items: flex-start;
         flex-direction: column;
         gap: 5px;
     }
-
     .service-card {
         padding: 18px;
     }
-
     .account-banner {
         align-items: flex-start;
         flex-direction: column;
     }
 }
-
-
-/* =================================
-   ACCESSIBILITY
-================================= */
-
+/* ACCESSIBILITY */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
