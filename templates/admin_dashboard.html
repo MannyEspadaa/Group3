@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Universal Power Washing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+    <h1>Admin Dashboard</h1>
+    <p>Review submitted work requests.</p>
+
+    {% if error %}
+        <p role="alert">{{ error }}</p>
+    {% endif %}
+
+    <section>
+        <h2>Work Requests</h2>
+        {% if requests %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Contact</th>
+                        <th>Service</th>
+                        <th>Preferred Date</th>
+                        <th>Description</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for work_request in requests %}
+                        <tr>
+                            <td>{{ work_request.get('FirstName', '') }} {{ work_request.get('LastName', '') }}</td>
+                            <td>{{ work_request.get('Email', '') }}<br>{{ work_request.get('PhoneNumber', '') }}</td>
+                            <td>{{ work_request.get('Service', '') }}</td>
+                            <td>{{ work_request.get('PreferredDate', '') }}</td>
+                            <td>{{ work_request.get('Description', '') }}</td>
+                            <td>
+                                {{ work_request.get('Address', '') }}<br>
+                                {{ work_request.get('City', '') }}, {{ work_request.get('State', '') }} {{ work_request.get('ZipCode', '') }}
+                            </td>
+                            <td>{{ work_request.get('Status', '') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% elif not error %}
+            <p>No work requests have been submitted.</p>
+        {% endif %}
+    </section>
+
+    <form action="{{ url_for('logout') }}" method="POST">
+        <button type="submit">Log Out</button>
+    </form>
+</body>
+</html>
