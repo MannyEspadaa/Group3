@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Request Work | Universal Power Washing</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="request-page">
+
+    <!-- Navigation -->
+    <header class="home-header">
+        <a class="home-logo" href="{{ url_for('home') }}">
+            Universal Power Washing
+        </a>
+
+        <nav aria-label="Main navigation">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('home') }}#services">Our Services</a>
+            <a href="{{ url_for('profile') }}">My Account</a>
+            <a class="nav-button" href="{{ url_for('request_work') }}">
+                Request Work →
+            </a>
+        </nav>
+    </header>
+
+    <main class="request-main">
+
+        <!-- Page Heading -->
+        <div class="request-heading">
+            <h1>What can we take care of?</h1>
+            <p>
+                Tell us a little about the job. We'll review the details
+                and get back to you with a quote.
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p id="message" role="status">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="request-layout">
+
+            <!-- Request Form -->
+            <section class="request-form-card">
+
+                <form action="{{ url_for('request_work') }}"
+                      method="POST">
+
+                    <!-- THE JOB -->
+                    <div class="form-section">
+                        <h2>The job</h2>
+
+                        <p class="form-description">
+                            All fields are required unless marked optional.
+                        </p>
+
+                        <div class="form-grid">
+
+                            <div class="form-field">
+                                <label for="service">Service</label>
+
+                                <select id="service"
+                                        name="Service"
+                                        required>
+
+                                    <option value="">
+                                        Select a service
+                                    </option>
+
+                                    {% for service in services %}
+                                        <option value="{{ service }}">
+                                            {{ service }}
+                                        </option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="preferred-date">
+                                    Preferred date
+                                </label>
+
+                                <input type="date"
+                                       id="preferred-date"
+                                       name="PreferredDate"
+                                       required>
+                            </div>
+
+                        </div>
+
+                        <div class="form-field">
+                            <label for="description">
+                                Job description
+                            </label>
+
+                            <textarea id="description"
+                                      name="Description"
+                                      rows="4"
+                                      placeholder="Describe the work you need done..."
+                                      required></textarea>
+                        </div>
+
+                    </div>
+
+                    <!-- THE PROPERTY -->
+                    <div class="form-section">
+
+                        <h2>The property</h2>
+
+                        <p class="form-description">
+                            This address is for this request only.
+                            You can change it without updating your account.
+                        </p>
+
+                        <div class="form-field">
+                            <label for="address">Street address</label>
+
+                            <input type="text"
+                                   id="address"
+                                   name="Address"
+                                   value="{{ customer.Address or '' }}"
+                                   maxlength="30"
+                                   autocomplete="street-address"
+                                   required>
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="form-field">
+                                <label for="city">Town / city</label>
+
+                                <input type="text"
+                                       id="city"
+                                       name="City"
+                                       value="{{ customer.City or '' }}"
+                                       maxlength="25"
+                                       autocomplete="address-level2"
+                                       required>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="state">State</label>
+
+                                <input type="text"
+                                       id="state"
+                                       name="State"
+                                       value="{{ customer.State or '' }}"
+                                       maxlength="2"
+                                       pattern="[A-Za-z]{2}"
+                                       title="Enter a two-letter state abbreviation."
+                                       autocomplete="address-level1"
+                                       required>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="zipcode">
+                                    ZIP / postal code
+                                </label>
+
+                                <input type="text"
+                                       id="zipcode"
+                                       name="ZipCode"
+                                       value="{{ customer.ZipCode or '' }}"
+                                       maxlength="5"
+                                       pattern="[0-9]{5}"
+                                       title="Enter a 5-digit ZIP code."
+                                       autocomplete="postal-code"
+                                       required>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CONTACT DETAILS -->
+                    <div class="form-section">
+
+                        <h2>Your contact details</h2>
+
+                        <p class="form-description">
+                            These are filled from your account.
+                            You can change them for this request.
+                        </p>
+
+                        <div class="form-field">
+                            <label for="first-name">First name</label>
+
+                            <input type="text"
+                                   id="first-name"
+                                   name="FirstName"
+                                   value="{{ customer.FirstName or '' }}"
+                                   maxlength="25"
+                                   autocomplete="given-name"
+                                   required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="last-name">Last name</label>
+
+                            <input type="text"
+                                   id="last-name"
+                                   name="LastName"
+                                   value="{{ customer.LastName or '' }}"
+                                   maxlength="25"
+                                   autocomplete="family-name"
+                                   required>
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="form-field">
+                                <label for="email">Email address</label>
+
+                                <input type="email"
+                                       id="email"
+                                       name="Email"
+                                       value="{{ customer.Email or '' }}"
+                                       maxlength="50"
+                                       autocomplete="email"
+                                       required>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="phone">Phone number</label>
+
+                                <input type="tel"
+                                       id="phone"
+                                       name="PhoneNumber"
+                                       value="{{ customer.PhoneNumber or '' }}"
+                                       autocomplete="tel">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- SUBMIT -->
+                    <div class="request-submit">
+
+                        <p>
+                            This is a request for a quote, not a confirmed
+                            booking. Your preferred date is subject
+                            to availability.
+                        </p>
+
+                        <button type="submit">
+                            Submit request →
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+            <!-- RIGHT SIDE INFORMATION -->
+            <aside class="request-sidebar">
+
+                <div class="request-info-card request-blue-card">
+
+                    <div class="request-info-icon">✓</div>
+
+                    <h2>Send it. Save it. Relax.</h2>
+
+                    <p>
+                        Once submitted, your request will be saved
+                        in My Account, so you can find the details
+                        anytime.
+                    </p>
+
+                    <div class="signed-in">
+                        <span class="request-info-icon">●</span>
+
+                        <div>
+                            <small>Signed in as</small>
+                            <p>{{ customer.Email }}</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="request-info-card">
+
+                    <h2>What happens next?</h2>
+
+                    <div class="request-step">
+                        <span class="request-step-icon">✓</span>
+
+                        <div>
+                            <strong>We review your request</strong>
+                            <p>
+                                We'll take a look at the job
+                                and your preferred date.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="request-step">
+                        <span class="request-step-icon">○</span>
+
+                        <div>
+                            <strong>We get in touch</strong>
+                            <p>
+                                We'll discuss the details
+                                and share a quote.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="request-step">
+                        <span class="request-step-icon">✓</span>
+
+                        <div>
+                            <strong>You give us the go-ahead</strong>
+                            <p>
+                                We'll agree on a date before
+                                any work begins.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="home-footer">
+        <div>
+            <strong>Universal Power Washing</strong>
+            <p>© 2026 Universal Power Washing. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

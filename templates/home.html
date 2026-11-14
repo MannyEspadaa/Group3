@@ -23,7 +23,7 @@
             {% endif %}
 
             {% if session.get('user_id') %}
-                <a class="nav-button" href="{{ url_for('home') }}">Request Work <span>→</span></a>
+                <a class="nav-button" href="{{ url_for('request_work') }}">Request Work <span>→</span></a>
             {% else %}
                 <a class="nav-button" href="{{ url_for('login') }}">Request Work <span>→</span></a>
             {% endif %}
@@ -39,7 +39,7 @@
                 <p>Powerwashing, yard cleanup, junk removal, and home improvement—handled with care.</p>
                 <div class="hero-buttons">
                     {% if session.get('user_id') %}
-                        <a class="primary-button" href="{{ url_for('home') }}">Request Work <span>→</span></a>
+                        <a class="primary-button" href="{{ url_for('request_work') }}">Request Work <span>→</span></a>
                     {% else %}
                         <a class="primary-button" href="{{ url_for('login') }}">Request Work <span>→</span></a>
                     {% endif %}

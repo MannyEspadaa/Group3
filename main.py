@@ -1,6 +1,9 @@
 import os
 import re
 import hashlib
+import uuid
+from werkzeug.utils import secure_filename
+from firebase_admin import firestore
 
 from flask import (
     Flask, render_template, request, redirect,
@@ -151,7 +154,8 @@ def register():
             'PhoneNumber': None,
             'Address': None,
             'City': None,
-            'State': None
+            'State': None,
+            'ZipCode': None
         }
 
         try:
@@ -229,9 +233,11 @@ def update_profile():
     last_name = request.form.get('LastName', '').strip()
     email = request.form.get('Email', '').strip().lower()
     phone = request.form.get('PhoneNumber', '').strip()
+    phone_digits = re.sub(r'\D', '', phone)
     address = request.form.get('Address', '').strip()
     city = request.form.get('City', '').strip()
     state = request.form.get('State', '').strip().upper()
+    zipcode = request.form.get('ZipCode', '').strip()
 
     # VALIDATION
 
@@ -255,8 +261,12 @@ def update_profile():
         flash('State must be a two-letter abbreviation.')
         return redirect(url_for('profile'))
 
-    if phone and not re.fullmatch(r'\d{1,11}', phone):
-        flash('Phone number must contain up to 11 digits.')
+    if phone and not re.fullmatch(r'\d{10,11}', phone_digits):
+        flash('Please enter a valid 10 or 11 digit phone number.')
+        return redirect(url_for('profile'))
+
+    if zipcode and not re.fullmatch(r'\d{5}', zipcode):
+        flash('ZIP code must contain exactly 5 digits.')
         return redirect(url_for('profile'))
 
     customer_ref = CUSTOMERS.document(str(user_id))
@@ -289,11 +299,11 @@ def update_profile():
             'FirstName': first_name,
             'LastName': last_name,
             'Email': email,
-            'PhoneNumber': phone or None,
+            'PhoneNumber': phone_digits or None,
             'Address': address or None,
             'City': city or None,
-            'State': state or None
-
+            'State': state or None,
+            'ZipCode': zipcode or None
         })
 
         session['first_name'] = first_name
@@ -308,6 +318,148 @@ def update_profile():
         flash('Unable to update your profile. Please try again.')
 
     return redirect(url_for('profile'))
+
+
+# REQUEST WORK
+@app.route('/request_work', methods=['GET', 'POST'])
+def request_work():
+
+    user_id = session.get('user_id')
+
+    # Make sure the customer is logged in
+    if not user_id:
+        flash('Please log in to request work.')
+        return redirect(url_for('login'))
+
+    # Retrieve the customer's account from Firestore
+    customer_document = CUSTOMERS.document(str(user_id)).get()
+
+    if not customer_document.exists:
+        session.clear()
+        flash('Customer account not found.')
+        return redirect(url_for('login'))
+
+    customer = customer_document.to_dict()
+    customer['CustomerID'] = customer_document.id
+
+    # Available services
+    services = [
+        'Powerwashing',
+        'Yard Clean Up',
+        'Junk Removal',
+        'Home Improvement'
+    ]
+
+    if request.method == 'POST':
+
+        service = request.form.get('Service', '').strip()
+        preferred_date = request.form.get('PreferredDate', '').strip()
+        description = request.form.get('Description', '').strip()
+
+        # Request-specific property address
+        address = request.form.get('Address', '').strip()
+        city = request.form.get('City', '').strip()
+        state = request.form.get('State', '').strip().upper()
+        zipcode = request.form.get('ZipCode', '').strip()
+
+        # Request-specific contact information
+        first_name = request.form.get('FirstName', '').strip()
+        last_name = request.form.get('LastName', '').strip()
+        email = request.form.get('Email', '').strip().lower()
+        phone = request.form.get('PhoneNumber', '').strip()
+
+        # VALIDATION
+        if service not in services:
+            flash('Please select a valid service.')
+            return render_template(
+                'request_work.html',
+                customer=customer,
+                services=services
+            )
+
+        if not preferred_date or not description:
+            flash('Please enter a preferred date and job description.')
+            return render_template(
+                'request_work.html',
+                customer=customer,
+                services=services
+            )
+
+        if not address or not city or not state or not zipcode:
+            flash('Please complete the property address.')
+            return render_template(
+                'request_work.html',
+                customer=customer,
+                services=services
+            )
+
+        if not re.fullmatch(r'[A-Z]{2}', state):
+            flash('Please enter a valid two-letter state abbreviation.')
+            return render_template(
+                'request_work.html',
+                customer=customer,
+                services=services
+            )
+
+        if not re.fullmatch(r'\d{5}', zipcode):
+            flash('Please enter a valid 5-digit ZIP code.')
+            return render_template(
+                'request_work.html',
+                customer=customer,
+                services=services
+            )
+
+        if not first_name or not last_name or not email:
+            flash('Please complete your contact information.')
+            return render_template(
+                'request_work.html',
+                customer=customer,
+                services=services
+            )
+
+        # SAVE WORK REQUEST
+        work_request_data = {
+            'CustomerID': customer_document.id,
+
+            'Service': service,
+            'PreferredDate': preferred_date,
+            'Description': description,
+
+            # This address belongs to the work request only.
+            # It does NOT update the Customer collection.
+            'Address': address,
+            'City': city,
+            'State': state,
+            'ZipCode': zipcode,
+
+            # Contact information saved with this request
+            'FirstName': first_name,
+            'LastName': last_name,
+            'Email': email,
+            'PhoneNumber': phone,
+
+            'Status': 'Pending',
+            'CreatedAt': firestore.SERVER_TIMESTAMP
+        }
+
+        try:
+            WORK_REQUESTS = db.collection('WorkRequests')
+
+            WORK_REQUESTS.add(work_request_data)
+
+            flash('Your work request has been submitted successfully.')
+            return redirect(url_for('profile'))
+
+        except Exception:
+            app.logger.exception("Work request submission failed.")
+
+            flash('Unable to submit your request. Please try again.')
+
+    return render_template(
+        'request_work.html',
+        customer=customer,
+        services=services
+    )
 
 
 # CHANGE PASSWORD
