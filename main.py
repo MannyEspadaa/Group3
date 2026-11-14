@@ -1,6 +1,8 @@
 import os
 import re
 import hashlib
+import hmac
+import secrets
 import uuid
 from werkzeug.utils import secure_filename
 from firebase_admin import firestore
@@ -17,10 +19,7 @@ from firebase_config import db
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get(
-    "FLASK_SECRET_KEY",
-    "change-this-secret-before-deployment"
-)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY","change-this-secret-before-deployment")
 
 EMAIL_PATTERN = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
@@ -43,6 +42,18 @@ def find_customer_by_email(email):
     return None
 
 
+def admin_credentials_match(email, password):
+    admin_email = os.environ.get('ADMIN_EMAIL', '').strip().lower()
+    admin_password = os.environ.get('ADMIN_PASSWORD', '')
+
+    return bool(
+        admin_email
+        and admin_password
+        and hmac.compare_digest(email.encode('utf-8'), admin_email.encode('utf-8'))
+        and hmac.compare_digest(password.encode('utf-8'), admin_password.encode('utf-8'))
+    )
+
+
 # HOME PAGE
 @app.route('/')
 def home():
@@ -55,8 +66,15 @@ def login():
 
     if request.method == 'POST':
 
+        session.clear()
         email = (request.form.get('email') or '').strip().lower()
         password = request.form.get('password') or ''
+
+        if admin_credentials_match(email, password):
+            session.clear()
+            session['role'] = 'admin'
+            session['first_name'] = 'Admin'
+            return redirect(url_for('admin_dashboard'))
 
         # Find customer in Firestore
         customer = find_customer_by_email(email)
@@ -68,7 +86,9 @@ def login():
         ):
 
             # Save customer information in session
+            session.clear()
             session['user_id'] = customer['CustomerID']
+            session['role'] = 'customer'
             session['first_name'] = customer['FirstName']
             session['last_name'] = customer['LastName']
 
@@ -181,13 +201,42 @@ def register():
 
         # SAVE SESSION
 
+        session.clear()
         session['user_id'] = customer_id
+        session['role'] = 'customer'
         session['first_name'] = first_name
         session['last_name'] = last_name
 
         return redirect(url_for('home'))
 
     return render_template('register.html')
+
+
+# ADMIN DASHBOARD
+@app.route('/admin')
+def admin_dashboard():
+    if session.get('role') != 'admin':
+        flash('Please log in with an admin account to view that page.')
+        return redirect(url_for('login'))
+
+    try:
+        work_requests = (
+            db.collection('WorkRequests')
+            .stream()
+        )
+        requests = [
+            {**work_request.to_dict(), 'RequestID': work_request.id}
+            for work_request in work_requests
+        ]
+    except Exception:
+        app.logger.exception("Firestore admin dashboard query failed.")
+        return render_template(
+            'admin_dashboard.html',
+            requests=[],
+            error='Unable to load work requests. Please try again.'
+        ), 503
+
+    return render_template('admin_dashboard.html', requests=requests)
 
 
 # PROFILE
