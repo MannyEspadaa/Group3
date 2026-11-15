@@ -13,13 +13,13 @@ from flask import (
 )
 
 from werkzeug.security import generate_password_hash, check_password_hash
-from google.api_core.exceptions import AlreadyExists
+from google.api_core.exceptions import AlreadyExists, GoogleAPICallError
 from firebase_config import db
 
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get("FLASK_SECRET_KEY","change-this-secret-before-deployment")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32)
 
 EMAIL_PATTERN = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
@@ -42,16 +42,24 @@ def find_customer_by_email(email):
     return None
 
 
-def admin_credentials_match(email, password):
-    admin_email = os.environ.get('ADMIN_EMAIL', '').strip().lower()
-    admin_password = os.environ.get('ADMIN_PASSWORD', '')
-
-    return bool(
-        admin_email
-        and admin_password
-        and hmac.compare_digest(email.encode('utf-8'), admin_email.encode('utf-8'))
-        and hmac.compare_digest(password.encode('utf-8'), admin_password.encode('utf-8'))
-    )
+def firebase_admin_authenticated(email, password):
+    try:
+        admin_documents = db.collection('Admin').where(
+            'Email', '==', email
+        ).limit(1).stream()
+        for document in admin_documents:
+            admin = document.to_dict() or {}
+            stored_password = admin.get('Password', '')
+            if not isinstance(stored_password, str):
+                return False
+            if stored_password.startswith(('scrypt:', 'pbkdf2:')):
+                return check_password_hash(stored_password, password)
+            return bool(stored_password) and hmac.compare_digest(
+                stored_password.encode('utf-8'), password.encode('utf-8')
+            )
+        return False
+    except GoogleAPICallError as error:
+        raise RuntimeError('Unable to check Firestore admin credentials.') from error
 
 
 # HOME PAGE
@@ -70,11 +78,18 @@ def login():
         email = (request.form.get('email') or '').strip().lower()
         password = request.form.get('password') or ''
 
-        if admin_credentials_match(email, password):
-            session.clear()
-            session['role'] = 'admin'
-            session['first_name'] = 'Admin'
-            return redirect(url_for('admin_dashboard'))
+        firebase_admin_unavailable = False
+        try:
+            is_admin = firebase_admin_authenticated(email, password)
+        except RuntimeError:
+            app.logger.exception("Firebase admin login failed.")
+            firebase_admin_unavailable = True
+        else:
+            if is_admin:
+                session.clear()
+                session['role'] = 'admin'
+                session['first_name'] = 'Admin'
+                return redirect(url_for('admin_dashboard'))
 
         # Find customer in Firestore
         customer = find_customer_by_email(email)
@@ -93,6 +108,10 @@ def login():
             session['last_name'] = customer['LastName']
 
             return redirect(url_for('profile'))
+
+        if firebase_admin_unavailable:
+            flash('Admin sign-in is temporarily unavailable.')
+            return render_template('login.html'), 503
 
         flash('Incorrect email or password.')
 
