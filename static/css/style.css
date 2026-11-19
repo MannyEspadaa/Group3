@@ -1417,3 +1417,12 @@ button:disabled {
         width: 100%;
     }
 }
+
+/* Make sure hidden request panels stay hidden */
+.request-detail-panel[hidden] {
+    display: none !important;
+}
+
+.request-list-card[hidden] {
+    display: none !important;
+}

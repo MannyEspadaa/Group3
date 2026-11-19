@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,289 +8,304 @@
 </head>
 
 <body class="admin-page">
-
-<header class="admin-header">
-    <a href="{{ url_for('home') }}" class="admin-logo">
-        Universal Power Washing
-    </a>
-
-    <nav>
-        <a href="{{ url_for('home') }}">Home</a>
-        <a href="{{ url_for('home') }}#services">Our services</a>
-    </nav>
-
-    <div class="admin-header-right">
-        <span class="admin-account">♧ Admin account</span>
-        <form action="{{ url_for('logout') }}" method="POST">
-            <button type="submit" class="signout-button">Sign out</button>
-        </form>
-    </div>
-</header>
-
-<main class="admin-main">
-
-    <div class="admin-heading">
-        <span class="admin-eyebrow">ADMIN ACCOUNT</span>
-        <h1>Customer work requests</h1>
-        <p>Review the details and photos, then manage submitted work requests.</p>
-    </div>
-
-    {% if error %}
-        <div class="admin-error" role="alert">{{ error }}</div>
-    {% endif %}
-
-    <div class="admin-tabs">
-        <button class="status-tab active" data-filter="Awaiting Review">
-            Awaiting review
-        </button>
-        <button class="status-tab" data-filter="Accepted">
-            Accepted
-        </button>
-        <button class="status-tab" data-filter="Denied">
-            Denied
-        </button>
-        <button class="status-tab" data-filter="All">
-            All requests
-        </button>
-    </div>
-
-    {% if requests %}
-
-    <div class="admin-layout">
-
-        <!-- LEFT: REQUEST LIST -->
-        <aside class="admin-request-list">
-
-            <h2>Incoming requests</h2>
-
-            {% for work_request in requests %}
-            <button
-                type="button"
-                class="request-list-card {% if loop.first %}selected{% endif %}"
-                data-index="{{ loop.index0 }}"
-                data-status="{{ work_request.get('DisplayStatus', 'Awaiting Review') }}"
-            >
-                <div class="request-card-top">
-                    <strong>
-                        {{ work_request.get('Service', 'Work request') }}
-                    </strong>
-                    <span class="request-arrow">›</span>
-                </div>
-
-                <p>
-                    {{ work_request.get('FirstName', '') }}
-                    {{ work_request.get('LastName', '') }}
-                </p>
-
-                <p>
-                    {{ work_request.get('Address', '') }}
-                </p>
-
-                <p>
-                    Submitted: {{ work_request.get('SubmittedDate', 'Not available') }}
-                </p>
-
-                <span class="status-badge
-                    {% if work_request.get('DisplayStatus') == 'Accepted' %}accepted
-                    {% elif work_request.get('DisplayStatus') == 'Denied' %}denied
-                    {% else %}pending{% endif %}">
-                    {{ work_request.get('DisplayStatus', 'Awaiting Review') }}
-                </span>
-            </button>
-            {% endfor %}
-
-        </aside>
-
-        <!-- RIGHT: REQUEST DETAILS -->
-        <section class="admin-details">
-
-            {% for work_request in requests %}
-
-            <div class="request-detail-panel"
-                 data-index="{{ loop.index0 }}"
-                 {% if not loop.first %}hidden{% endif %}>
-
-                <div class="details-heading">
-                    <div>
-                        <h2>Request details</h2>
-                        <p>Review and manage this customer request.</p>
-                    </div>
-
-                    <div class="details-status">
-                        <small>Request status</small>
-                        <span class="status-badge
-                            {% if work_request.get('DisplayStatus') == 'Accepted' %}accepted
-                            {% elif work_request.get('DisplayStatus') == 'Denied' %}denied
-                            {% else %}pending{% endif %}">
-                            {{ work_request.get('DisplayStatus', 'Awaiting Review') }}
-                        </span>
-                    </div>
-                </div>
-
-                <<form class="request-edit-form"
-      method="POST"
-      action="{{ url_for('update_work_request', request_id=work_request.get('RequestID')) }}">
-
-    <!-- All your customer information fields -->
-
-    <div class="edit-controls">
-        <button type="button" class="edit-request-button">
-            Edit request
-        </button>
-
-        <button type="submit" class="save-request-button" hidden>
-            Save changes
-        </button>
-
-        <button type="button" class="cancel-edit-button" hidden>
-            Cancel
-        </button>
-    </div>
-
-</form> <!-- CLOSE THE EDIT FORM HERE -->
-
-<!-- ACCEPT AND DENY MUST BE OUTSIDE THE EDIT FORM -->
-
-<div class="request-actions">
-    <p>Accept this request, or deny it if you're unable to help.</p>
-
-    <div class="action-buttons">
-
-        <form method="POST"
-              action="{{ url_for('update_work_request_status', request_id=work_request.get('RequestID')) }}">
-
-            <input type="hidden" name="status" value="Accepted">
-
-            <button type="submit" class="accept-button">
-                ✓ Accept work
-            </button>
-        </form>
-
-                    <form method="POST"
-              action="{{ url_for('update_work_request_status', request_id=work_request.get('RequestID')) }}">
-
-            <input type="hidden" name="status" value="Denied">
-
-            <button type="submit" class="deny-button">
-                ✕ Deny work
-            </button>
-        </form>
-
-    </div>
-</div>
-
-            {% endfor %}
-
-        </section>
-
-    </div>
-
-    {% else %}
-        <div class="no-requests">
-            <h2>No work requests yet</h2>
-            <p>Submitted customer requests will appear here.</p>
+    <header class="admin-header">
+        <a href="{{ url_for('home') }}" class="admin-logo">Universal Power Washing</a>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('home') }}#services">Our services</a>
+        </nav>
+        <div class="admin-header-right">
+            <span class="admin-account">♧ Admin account</span>
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button type="submit" class="signout-button">Sign out</button>
+            </form>
         </div>
-    {% endif %}
+    </header>
 
-</main>
+    <main class="admin-main">
+        <div class="admin-heading">
+            <span class="admin-eyebrow">ADMIN ACCOUNT</span>
+            <h1>Customer work requests</h1>
+            <p>Review the details and photos, then manage submitted work requests.</p>
+        </div>
 
-<footer class="admin-footer">
-    <div>
-        <strong>Universal Power Washing</strong>
-        <p>© 2026 Universal Power Washing</p>
-    </div>
-    <span>Admin</span>
-</footer>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="admin-error" role="status">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-<script>
-    // Select requests
-    const requestCards = document.querySelectorAll('.request-list-card');
-    const detailPanels = document.querySelectorAll('.request-detail-panel');
-    const tabs = document.querySelectorAll('.status-tab');
+        {% if error %}
+            <div class="admin-error" role="alert">{{ error }}</div>
+        {% endif %}
 
-    function selectRequest(index) {
-        requestCards.forEach(card => {
-            card.classList.toggle(
-                'selected',
-                card.dataset.index === String(index)
-            );
-        });
+        <div class="admin-tabs">
+            <button type="button" class="status-tab active" data-filter="Awaiting Review">Awaiting review</button>
+            <button type="button" class="status-tab" data-filter="Accepted">Accepted</button>
+            <button type="button" class="status-tab" data-filter="Denied">Denied</button>
+            <button type="button" class="status-tab" data-filter="All">All requests</button>
+        </div>
 
-        detailPanels.forEach(panel => {
-            panel.hidden = panel.dataset.index !== String(index);
-        });
-    }
+        {% if requests %}
+            <div class="admin-layout">
+                <aside class="admin-request-list">
+                    <h2>Incoming requests</h2>
 
-    requestCards.forEach(card => {
-        card.addEventListener('click', () => {
-            selectRequest(card.dataset.index);
-        });
-    });
+                    {% for work_request in requests %}
+                        {% set current_status = work_request.get('DisplayStatus', work_request.get('Status', 'Pending')) %}
+                        <button type="button"
+                                class="request-list-card"
+                                data-request-id="{{ work_request.get('RequestID') }}"
+                                data-status="{{ current_status }}">
+                            <div class="request-card-top">
+                                <strong>{{ work_request.get('Service', 'Work request') }}</strong>
+                                <span class="request-arrow">›</span>
+                            </div>
+                            <p>{{ work_request.get('FirstName', '') }} {{ work_request.get('LastName', '') }}</p>
+                            <p>{{ work_request.get('Address', '') }}</p>
+                            <p>Submitted: {{ work_request.get('SubmittedDate', 'Not available') }}</p>
+                            <span class="status-badge {% if current_status == 'Accepted' %}accepted{% elif current_status == 'Denied' %}denied{% else %}pending{% endif %}">
+                                {% if current_status == 'Pending' %}Awaiting Review{% else %}{{ current_status }}{% endif %}
+                            </span>
+                        </button>
+                    {% endfor %}
+                </aside>
 
-    // Filter requests by status
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(item => item.classList.remove('active'));
-            tab.classList.add('active');
+                <section class="admin-details">
+                    {% for work_request in requests %}
+                        {% set current_status = work_request.get('DisplayStatus', work_request.get('Status', 'Pending')) %}
+                        <div class="request-detail-panel"
+                             data-request-id="{{ work_request.get('RequestID') }}"
+                             hidden>
+                            <div class="details-heading">
+                                <div>
+                                    <h2>Request details</h2>
+                                    <p>Review and manage this customer request.</p>
+                                </div>
+                                <div class="details-status">
+                                    <small>Request status</small>
+                                    <span class="status-badge {% if current_status == 'Accepted' %}accepted{% elif current_status == 'Denied' %}denied{% else %}pending{% endif %}">
+                                        {% if current_status == 'Pending' %}Awaiting Review{% else %}{{ current_status }}{% endif %}
+                                    </span>
+                                </div>
+                            </div>
 
-            const filter = tab.dataset.filter;
+                            <form class="request-edit-form" method="POST"
+                                  action="{{ url_for('update_work_request', request_id=work_request.get('RequestID')) }}">
+                                <div class="details-grid">
+                                    <div class="detail-field">
+                                        <label for="first-{{ loop.index }}">First name</label>
+                                        <input id="first-{{ loop.index }}" type="text" name="FirstName" value="{{ work_request.get('FirstName', '') }}" readonly required>
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="last-{{ loop.index }}">Last name</label>
+                                        <input id="last-{{ loop.index }}" type="text" name="LastName" value="{{ work_request.get('LastName', '') }}" readonly required>
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="email-{{ loop.index }}">Email</label>
+                                        <input id="email-{{ loop.index }}" type="email" name="Email" value="{{ work_request.get('Email', '') }}" readonly required>
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="phone-{{ loop.index }}">Phone number</label>
+                                        <input id="phone-{{ loop.index }}" type="text" name="PhoneNumber" value="{{ work_request.get('PhoneNumber', '') }}" readonly>
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="service-{{ loop.index }}">Service requested</label>
+                                        <select id="service-{{ loop.index }}" name="Service" disabled required>
+                                            {% for service in ['Powerwashing', 'Yard Clean Up', 'Junk Removal', 'Home Improvement'] %}
+                                                <option value="{{ service }}" {% if work_request.get('Service', '') == service %}selected{% endif %}>{{ service }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="date-{{ loop.index }}">Preferred date</label>
+                                        <input id="date-{{ loop.index }}" type="text" name="PreferredDate" value="{{ work_request.get('PreferredDate', '') }}" readonly>
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="address-{{ loop.index }}">Street address</label>
+                                        <input id="address-{{ loop.index }}" type="text" name="Address" value="{{ work_request.get('Address', '') }}" readonly>
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="city-{{ loop.index }}">City</label>
+                                        <input id="city-{{ loop.index }}" type="text" name="City" value="{{ work_request.get('City', '') }}" readonly>
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="state-{{ loop.index }}">State</label>
+                                        <input id="state-{{ loop.index }}" type="text" name="State" value="{{ work_request.get('State', '') }}" readonly required maxlength="2">
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="zip-{{ loop.index }}">ZIP code</label>
+                                        <input id="zip-{{ loop.index }}" type="text" name="ZipCode" value="{{ work_request.get('ZipCode', '') }}" readonly required maxlength="5">
+                                    </div>
+                                    <div class="detail-field">
+                                        <label for="submitted-{{ loop.index }}">Submitted date</label>
+                                        <input id="submitted-{{ loop.index }}" type="text" value="{{ work_request.get('SubmittedDate', 'Not available') }}" readonly>
+                                    </div>
+                                </div>
 
+                                <div class="detail-description">
+                                    <label for="description-{{ loop.index }}">Additional details</label>
+                                    <textarea id="description-{{ loop.index }}" name="Description" rows="4" readonly>{{ work_request.get('Description', work_request.get('Details', 'No additional details provided.')) }}</textarea>
+                                </div>
+
+                                {% set photos = work_request.get('Photos', []) %}
+                                <div class="detail-photos">
+                                    <h3>Customer photos</h3>
+                                    {% if photos %}
+                                        <div class="photo-grid">
+                                            {% for photo in photos %}
+                                                {% if photo is string %}
+                                                    <a class="request-photo" href="{{ photo }}" target="_blank" rel="noopener">
+                                                        <img src="{{ photo }}" alt="Customer work request photo">
+                                                    </a>
+                                                {% elif photo.get('url') %}
+                                                    <a class="request-photo" href="{{ photo.get('url') }}" target="_blank" rel="noopener">
+                                                        <img src="{{ photo.get('url') }}" alt="Customer work request photo">
+                                                    </a>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="no-photos">No photos were attached to this request.</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="edit-controls">
+                                    <button type="button" class="edit-request-button">Edit request</button>
+                                    <button type="submit" class="save-request-button" hidden>Save changes</button>
+                                    <button type="button" class="cancel-edit-button" hidden>Cancel</button>
+                                </div>
+                            </form>
+
+                            <div class="request-actions">
+                                <p>Accept this request, or deny it if you're unable to help.</p>
+                                <div class="action-buttons">
+                                    <form method="POST" action="{{ url_for('update_work_request_status', request_id=work_request.get('RequestID')) }}">
+                                        <input type="hidden" name="status" value="Accepted">
+                                        <button type="submit" class="accept-button">✓ Accept work</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('update_work_request_status', request_id=work_request.get('RequestID')) }}">
+                                        <input type="hidden" name="status" value="Denied">
+                                        <button type="submit" class="deny-button">✕ Deny work</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </section>
+            </div>
+        {% else %}
+            <div class="no-requests">
+                <h2>No work requests yet</h2>
+                <p>Submitted customer requests will appear here.</p>
+            </div>
+        {% endif %}
+    </main>
+
+    <footer class="admin-footer">
+        <div>
+            <strong>Universal Power Washing</strong>
+            <p>© 2026 Universal Power Washing</p>
+        </div>
+        <span>Admin</span>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const requestCards = Array.from(document.querySelectorAll('.request-list-card'));
+        const detailPanels = Array.from(document.querySelectorAll('.request-detail-panel'));
+        const tabs = Array.from(document.querySelectorAll('.status-tab'));
+
+        function normalizedStatus(status) {
+            if (!status || status === 'Pending' || status === 'Awaiting Review') {
+                return 'Awaiting Review';
+            }
+            return status;
+        }
+
+        function selectRequest(requestId) {
             requestCards.forEach(card => {
-                const status = card.dataset.status;
-
-                card.hidden = !(
-                    filter === 'All' ||
-                    (filter === 'Awaiting Review' &&
-                        (!status || status === 'Awaiting Review')) ||
-                    status === filter
-                );
+                card.classList.toggle('selected', card.dataset.requestId === requestId);
             });
 
-            const firstVisible = Array.from(requestCards)
-                .find(card => !card.hidden);
+            detailPanels.forEach(panel => {
+                panel.hidden = panel.dataset.requestId !== requestId;
+            });
+        }
 
-            if (firstVisible) {
-                selectRequest(firstVisible.dataset.index);
+        function applyFilter(filter) {
+            let firstVisibleCard = null;
+
+            requestCards.forEach(card => {
+                const visible = filter === 'All' || normalizedStatus(card.dataset.status) === filter;
+                card.hidden = !visible;
+                if (visible && firstVisibleCard === null) {
+                    firstVisibleCard = card;
+                }
+            });
+
+            if (firstVisibleCard) {
+                selectRequest(firstVisibleCard.dataset.requestId);
             } else {
                 detailPanels.forEach(panel => panel.hidden = true);
+                requestCards.forEach(card => card.classList.remove('selected'));
             }
-        });
-    });
+        }
 
-    // Edit request fields
-    document.querySelectorAll('.request-edit-form').forEach(form => {
-    const editButton = form.querySelector('.edit-request-button');
-    const saveButton = form.querySelector('.save-request-button');
-    const cancelButton = form.querySelector('.cancel-edit-button');
-
-    const fields = form.querySelectorAll('input, textarea');
-
-    let originalValues = [];
-
-    editButton.addEventListener('click', () => {
-        originalValues = Array.from(fields).map(field => field.value);
-
-        fields.forEach(field => {
-            field.readOnly = false;
+        requestCards.forEach(card => {
+            card.addEventListener('click', () => selectRequest(card.dataset.requestId));
         });
 
-        editButton.hidden = true;
-        saveButton.hidden = false;
-        cancelButton.hidden = false;
-    });
-
-    cancelButton.addEventListener('click', () => {
-        fields.forEach((field, index) => {
-            field.value = originalValues[index];
-            field.readOnly = true;
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(item => item.classList.remove('active'));
+                tab.classList.add('active');
+                applyFilter(tab.dataset.filter);
+            });
         });
 
-        editButton.hidden = false;
-        saveButton.hidden = true;
-        cancelButton.hidden = true;
-    });
-});
-</script>
+        document.querySelectorAll('.request-edit-form').forEach(form => {
+            const editButton = form.querySelector('.edit-request-button');
+            const saveButton = form.querySelector('.save-request-button');
+            const cancelButton = form.querySelector('.cancel-edit-button');
+            const fields = Array.from(form.querySelectorAll('input[name], textarea[name], select[name]'));
+            let originalValues = [];
 
+            editButton.addEventListener('click', () => {
+                originalValues = fields.map(field => field.value);
+                fields.forEach(field => {
+                    if (field.tagName === 'SELECT') {
+                        field.disabled = false;
+                    } else {
+                        field.readOnly = false;
+                    }
+                });
+                editButton.hidden = true;
+                saveButton.hidden = false;
+                cancelButton.hidden = false;
+            });
+
+            cancelButton.addEventListener('click', () => {
+                fields.forEach((field, index) => {
+                    field.value = originalValues[index];
+                    if (field.tagName === 'SELECT') {
+                        field.disabled = true;
+                    } else {
+                        field.readOnly = true;
+                    }
+                });
+                editButton.hidden = false;
+                saveButton.hidden = true;
+                cancelButton.hidden = true;
+            });
+        });
+
+        applyFilter('Awaiting Review');
+    });
+    </script>
 </body>
 </html>

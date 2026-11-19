@@ -244,32 +244,15 @@ def admin_dashboard():
 
         for document in work_requests:
             work_request = document.to_dict() or {}
+
             work_request['RequestID'] = document.id
 
-            # Convert the existing Pending status into the
-            # dashboard's Awaiting Review label.
             status = work_request.get('Status', 'Pending')
 
             if status == 'Pending':
                 work_request['DisplayStatus'] = 'Awaiting Review'
             else:
                 work_request['DisplayStatus'] = status
-
-            # Use CreatedAt as the submitted date.
-            created_at = work_request.get('CreatedAt')
-
-            if created_at:
-                if hasattr(created_at, 'strftime'):
-                    work_request['SubmittedDate'] = created_at.strftime(
-                        '%B %d, %Y'
-                    )
-                else:
-                    work_request['SubmittedDate'] = str(created_at)
-            else:
-                work_request['SubmittedDate'] = 'Not available'
-
-            # Prevent errors when older requests have no Photos field.
-            work_request['Photos'] = work_request.get('Photos', [])
 
             requests.append(work_request)
 
