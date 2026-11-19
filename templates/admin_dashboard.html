@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,54 +7,291 @@
     <title>Admin Dashboard | Universal Power Washing</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-    <a href="{{ url_for('home') }}">Back to Home</a>
-    <h1>Admin Dashboard</h1>
-    <p>Review submitted work requests.</p>
+
+<body class="admin-page">
+
+<header class="admin-header">
+    <a href="{{ url_for('home') }}" class="admin-logo">
+        Universal Power Washing
+    </a>
+
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('home') }}#services">Our services</a>
+    </nav>
+
+    <div class="admin-header-right">
+        <span class="admin-account">♧ Admin account</span>
+        <form action="{{ url_for('logout') }}" method="POST">
+            <button type="submit" class="signout-button">Sign out</button>
+        </form>
+    </div>
+</header>
+
+<main class="admin-main">
+
+    <div class="admin-heading">
+        <span class="admin-eyebrow">ADMIN ACCOUNT</span>
+        <h1>Customer work requests</h1>
+        <p>Review the details and photos, then manage submitted work requests.</p>
+    </div>
 
     {% if error %}
-        <p role="alert">{{ error }}</p>
+        <div class="admin-error" role="alert">{{ error }}</div>
     {% endif %}
 
-    <section>
-        <h2>Work Requests</h2>
-        {% if requests %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Customer</th>
-                        <th>Contact</th>
-                        <th>Service</th>
-                        <th>Preferred Date</th>
-                        <th>Description</th>
-                        <th>Address</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for work_request in requests %}
-                        <tr>
-                            <td>{{ work_request.get('FirstName', '') }} {{ work_request.get('LastName', '') }}</td>
-                            <td>{{ work_request.get('Email', '') }}<br>{{ work_request.get('PhoneNumber', '') }}</td>
-                            <td>{{ work_request.get('Service', '') }}</td>
-                            <td>{{ work_request.get('PreferredDate', '') }}</td>
-                            <td>{{ work_request.get('Description', '') }}</td>
-                            <td>
-                                {{ work_request.get('Address', '') }}<br>
-                                {{ work_request.get('City', '') }}, {{ work_request.get('State', '') }} {{ work_request.get('ZipCode', '') }}
-                            </td>
-                            <td>{{ work_request.get('Status', '') }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% elif not error %}
-            <p>No work requests have been submitted.</p>
-        {% endif %}
-    </section>
+    <div class="admin-tabs">
+        <button class="status-tab active" data-filter="Awaiting Review">
+            Awaiting review
+        </button>
+        <button class="status-tab" data-filter="Accepted">
+            Accepted
+        </button>
+        <button class="status-tab" data-filter="Denied">
+            Denied
+        </button>
+        <button class="status-tab" data-filter="All">
+            All requests
+        </button>
+    </div>
 
-    <form action="{{ url_for('logout') }}" method="POST">
-        <button type="submit">Log Out</button>
-    </form>
+    {% if requests %}
+
+    <div class="admin-layout">
+
+        <!-- LEFT: REQUEST LIST -->
+        <aside class="admin-request-list">
+
+            <h2>Incoming requests</h2>
+
+            {% for work_request in requests %}
+            <button
+                type="button"
+                class="request-list-card {% if loop.first %}selected{% endif %}"
+                data-index="{{ loop.index0 }}"
+                data-status="{{ work_request.get('DisplayStatus', 'Awaiting Review') }}"
+            >
+                <div class="request-card-top">
+                    <strong>
+                        {{ work_request.get('Service', 'Work request') }}
+                    </strong>
+                    <span class="request-arrow">›</span>
+                </div>
+
+                <p>
+                    {{ work_request.get('FirstName', '') }}
+                    {{ work_request.get('LastName', '') }}
+                </p>
+
+                <p>
+                    {{ work_request.get('Address', '') }}
+                </p>
+
+                <p>
+                    Submitted: {{ work_request.get('SubmittedDate', 'Not available') }}
+                </p>
+
+                <span class="status-badge
+                    {% if work_request.get('DisplayStatus') == 'Accepted' %}accepted
+                    {% elif work_request.get('DisplayStatus') == 'Denied' %}denied
+                    {% else %}pending{% endif %}">
+                    {{ work_request.get('DisplayStatus', 'Awaiting Review') }}
+                </span>
+            </button>
+            {% endfor %}
+
+        </aside>
+
+        <!-- RIGHT: REQUEST DETAILS -->
+        <section class="admin-details">
+
+            {% for work_request in requests %}
+
+            <div class="request-detail-panel"
+                 data-index="{{ loop.index0 }}"
+                 {% if not loop.first %}hidden{% endif %}>
+
+                <div class="details-heading">
+                    <div>
+                        <h2>Request details</h2>
+                        <p>Review and manage this customer request.</p>
+                    </div>
+
+                    <div class="details-status">
+                        <small>Request status</small>
+                        <span class="status-badge
+                            {% if work_request.get('DisplayStatus') == 'Accepted' %}accepted
+                            {% elif work_request.get('DisplayStatus') == 'Denied' %}denied
+                            {% else %}pending{% endif %}">
+                            {{ work_request.get('DisplayStatus', 'Awaiting Review') }}
+                        </span>
+                    </div>
+                </div>
+
+                <<form class="request-edit-form"
+      method="POST"
+      action="{{ url_for('update_work_request', request_id=work_request.get('RequestID')) }}">
+
+    <!-- All your customer information fields -->
+
+    <div class="edit-controls">
+        <button type="button" class="edit-request-button">
+            Edit request
+        </button>
+
+        <button type="submit" class="save-request-button" hidden>
+            Save changes
+        </button>
+
+        <button type="button" class="cancel-edit-button" hidden>
+            Cancel
+        </button>
+    </div>
+
+</form> <!-- CLOSE THE EDIT FORM HERE -->
+
+<!-- ACCEPT AND DENY MUST BE OUTSIDE THE EDIT FORM -->
+
+<div class="request-actions">
+    <p>Accept this request, or deny it if you're unable to help.</p>
+
+    <div class="action-buttons">
+
+        <form method="POST"
+              action="{{ url_for('update_work_request_status', request_id=work_request.get('RequestID')) }}">
+
+            <input type="hidden" name="status" value="Accepted">
+
+            <button type="submit" class="accept-button">
+                ✓ Accept work
+            </button>
+        </form>
+
+                    <form method="POST"
+              action="{{ url_for('update_work_request_status', request_id=work_request.get('RequestID')) }}">
+
+            <input type="hidden" name="status" value="Denied">
+
+            <button type="submit" class="deny-button">
+                ✕ Deny work
+            </button>
+        </form>
+
+    </div>
+</div>
+
+            {% endfor %}
+
+        </section>
+
+    </div>
+
+    {% else %}
+        <div class="no-requests">
+            <h2>No work requests yet</h2>
+            <p>Submitted customer requests will appear here.</p>
+        </div>
+    {% endif %}
+
+</main>
+
+<footer class="admin-footer">
+    <div>
+        <strong>Universal Power Washing</strong>
+        <p>© 2026 Universal Power Washing</p>
+    </div>
+    <span>Admin</span>
+</footer>
+
+<script>
+    // Select requests
+    const requestCards = document.querySelectorAll('.request-list-card');
+    const detailPanels = document.querySelectorAll('.request-detail-panel');
+    const tabs = document.querySelectorAll('.status-tab');
+
+    function selectRequest(index) {
+        requestCards.forEach(card => {
+            card.classList.toggle(
+                'selected',
+                card.dataset.index === String(index)
+            );
+        });
+
+        detailPanels.forEach(panel => {
+            panel.hidden = panel.dataset.index !== String(index);
+        });
+    }
+
+    requestCards.forEach(card => {
+        card.addEventListener('click', () => {
+            selectRequest(card.dataset.index);
+        });
+    });
+
+    // Filter requests by status
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(item => item.classList.remove('active'));
+            tab.classList.add('active');
+
+            const filter = tab.dataset.filter;
+
+            requestCards.forEach(card => {
+                const status = card.dataset.status;
+
+                card.hidden = !(
+                    filter === 'All' ||
+                    (filter === 'Awaiting Review' &&
+                        (!status || status === 'Awaiting Review')) ||
+                    status === filter
+                );
+            });
+
+            const firstVisible = Array.from(requestCards)
+                .find(card => !card.hidden);
+
+            if (firstVisible) {
+                selectRequest(firstVisible.dataset.index);
+            } else {
+                detailPanels.forEach(panel => panel.hidden = true);
+            }
+        });
+    });
+
+    // Edit request fields
+    document.querySelectorAll('.request-edit-form').forEach(form => {
+    const editButton = form.querySelector('.edit-request-button');
+    const saveButton = form.querySelector('.save-request-button');
+    const cancelButton = form.querySelector('.cancel-edit-button');
+
+    const fields = form.querySelectorAll('input, textarea');
+
+    let originalValues = [];
+
+    editButton.addEventListener('click', () => {
+        originalValues = Array.from(fields).map(field => field.value);
+
+        fields.forEach(field => {
+            field.readOnly = false;
+        });
+
+        editButton.hidden = true;
+        saveButton.hidden = false;
+        cancelButton.hidden = false;
+    });
+
+    cancelButton.addEventListener('click', () => {
+        fields.forEach((field, index) => {
+            field.value = originalValues[index];
+            field.readOnly = true;
+        });
+
+        editButton.hidden = false;
+        saveButton.hidden = true;
+        cancelButton.hidden = true;
+    });
+});
+</script>
+
 </body>
 </html>

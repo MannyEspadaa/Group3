@@ -230,32 +230,184 @@ def register():
 
     return render_template('register.html')
 
-
 # ADMIN DASHBOARD
-@app.route('/admin')
+@app.route('/admin_dashboard', methods=['GET', 'POST'])
 def admin_dashboard():
     if session.get('role') != 'admin':
         flash('Please log in with an admin account to view that page.')
         return redirect(url_for('login'))
 
     try:
-        work_requests = (
-            db.collection('WorkRequests')
-            .stream()
+        work_requests = db.collection('WorkRequests').stream()
+
+        requests = []
+
+        for document in work_requests:
+            work_request = document.to_dict() or {}
+            work_request['RequestID'] = document.id
+
+            # Convert the existing Pending status into the
+            # dashboard's Awaiting Review label.
+            status = work_request.get('Status', 'Pending')
+
+            if status == 'Pending':
+                work_request['DisplayStatus'] = 'Awaiting Review'
+            else:
+                work_request['DisplayStatus'] = status
+
+            # Use CreatedAt as the submitted date.
+            created_at = work_request.get('CreatedAt')
+
+            if created_at:
+                if hasattr(created_at, 'strftime'):
+                    work_request['SubmittedDate'] = created_at.strftime(
+                        '%B %d, %Y'
+                    )
+                else:
+                    work_request['SubmittedDate'] = str(created_at)
+            else:
+                work_request['SubmittedDate'] = 'Not available'
+
+            # Prevent errors when older requests have no Photos field.
+            work_request['Photos'] = work_request.get('Photos', [])
+
+            requests.append(work_request)
+
+        # Newest requests first.
+        requests.sort(
+            key=lambda item: (
+                item['CreatedAt'].timestamp()
+                if hasattr(item.get('CreatedAt'), 'timestamp')
+                else 0
+            ),
+            reverse=True
         )
-        requests = [
-            {**work_request.to_dict(), 'RequestID': work_request.id}
-            for work_request in work_requests
-        ]
+
     except Exception:
         app.logger.exception("Firestore admin dashboard query failed.")
+
         return render_template(
             'admin_dashboard.html',
             requests=[],
             error='Unable to load work requests. Please try again.'
         ), 503
 
-    return render_template('admin_dashboard.html', requests=requests)
+    return render_template(
+        'admin_dashboard.html',
+        requests=requests
+    )
+
+
+# UPDATE A WORK REQUEST
+@app.route('/admin/request/<request_id>/update', methods=['POST'])
+def update_work_request(request_id):
+    if session.get('role') != 'admin':
+        flash('You must be logged in as an admin.')
+        return redirect(url_for('login'))
+
+    request_ref = db.collection('WorkRequests').document(request_id)
+
+    # Only allow these fields to be edited.
+    editable_fields = [
+        'FirstName',
+        'LastName',
+        'PhoneNumber',
+        'Email',
+        'Address',
+        'City',
+        'State',
+        'ZipCode',
+        'PreferredDate',
+        'Service',
+        'Description'
+    ]
+
+    updated_data = {}
+
+    for field in editable_fields:
+        updated_data[field] = (
+            request.form.get(field, '').strip()
+        )
+
+    # Basic validation.
+    if not updated_data['FirstName'] or not updated_data['LastName']:
+        flash('Customer first and last names are required.')
+        return redirect(url_for('admin_dashboard'))
+
+    if not EMAIL_PATTERN.fullmatch(updated_data['Email']):
+        flash('Please enter a valid email address.')
+        return redirect(url_for('admin_dashboard'))
+
+    if not re.fullmatch(r'[A-Z]{2}', updated_data['State'].upper()):
+        flash('State must be a two-letter abbreviation.')
+        return redirect(url_for('admin_dashboard'))
+
+    if not re.fullmatch(r'\d{5}', updated_data['ZipCode']):
+        flash('ZIP code must contain exactly 5 digits.')
+        return redirect(url_for('admin_dashboard'))
+
+    if updated_data['Service'] not in [
+        'Powerwashing',
+        'Yard Clean Up',
+        'Junk Removal',
+        'Home Improvement'
+    ]:
+        flash('Please select a valid service.')
+        return redirect(url_for('admin_dashboard'))
+
+    updated_data['State'] = updated_data['State'].upper()
+
+    try:
+        document = request_ref.get()
+
+        if not document.exists:
+            flash('Work request could not be found.')
+            return redirect(url_for('admin_dashboard'))
+
+        request_ref.update(updated_data)
+
+        flash('Work request updated successfully.')
+
+    except Exception:
+        app.logger.exception('Work request update failed.')
+        flash('Unable to update the work request.')
+
+    return redirect(url_for('admin_dashboard'))
+
+
+# ACCEPT OR DENY A WORK REQUEST
+@app.route('/admin/request/<request_id>/status', methods=['POST'])
+def update_work_request_status(request_id):
+    if session.get('role') != 'admin':
+        flash('You must be logged in as an admin.')
+        return redirect(url_for('login'))
+
+    new_status = request.form.get('status', '')
+
+    if new_status not in ['Accepted', 'Denied']:
+        flash('Invalid work request status.')
+        return redirect(url_for('admin_dashboard'))
+
+    try:
+        request_ref = db.collection('WorkRequests').document(request_id)
+
+        document = request_ref.get()
+
+        if not document.exists:
+            flash('Work request could not be found.')
+            return redirect(url_for('admin_dashboard'))
+
+        request_ref.update({
+            'Status': new_status
+        })
+
+        flash(f'Work request successfully marked as {new_status}.')
+
+    except Exception:
+        app.logger.exception('Work request status update failed.')
+        flash('Unable to update work request status.')
+
+    return redirect(url_for('admin_dashboard'))
 
 
 # PROFILE

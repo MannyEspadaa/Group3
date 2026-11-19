@@ -771,3 +771,649 @@ button:disabled {
         padding: 16px;
     }
 }
+
+
+/* =========================================
+   ADMIN DASHBOARD
+========================================= */
+
+.admin-page {
+    padding: 0;
+    min-height: 100vh;
+    background: #f7f8f4;
+    color: #243849;
+}
+
+/* Header */
+
+.admin-header {
+    min-height: 77px;
+    padding: 0 6.6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    background: white;
+    border-bottom: 1px solid #d7e5ed;
+}
+
+.admin-logo {
+    color: #243849;
+    font-size: 19px;
+    font-weight: 500;
+}
+
+.admin-header nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.admin-header nav a {
+    color: #526a78;
+    font-size: 13px;
+}
+
+.admin-header nav a:hover {
+    color: #347da3;
+}
+
+.admin-header-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.admin-account {
+    color: #2865b8;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.admin-header-right form {
+    margin: 0;
+}
+
+.admin-header-right .signout-button {
+    margin: 0;
+    padding: 5px 0;
+    min-height: auto;
+    background: transparent;
+    color: #708493;
+    border: none;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.admin-header-right .signout-button:hover {
+    color: #347da3;
+    background: transparent;
+}
+
+/* Main content */
+
+.admin-main {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 40px 30px 58px;
+}
+
+.admin-heading {
+    margin-bottom: 23px;
+}
+
+.admin-eyebrow {
+    color: #2865b8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-heading h1 {
+    margin: 8px 0 6px;
+    color: #243849;
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+}
+
+.admin-heading p {
+    margin: 0;
+    color: #708493;
+    font-size: 14px;
+}
+
+.admin-error {
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: #fcebea;
+    border: 1px solid #e8c4c0;
+    border-radius: 7px;
+    color: #a33b32;
+}
+
+/* Status tabs */
+
+.admin-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 11px;
+    margin-bottom: 25px;
+}
+
+.admin-tabs .status-tab {
+    min-height: 39px;
+    margin: 0;
+    padding: 9px 17px;
+    background: white;
+    color: #34485a;
+    border: 1px solid #d7e5ed;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.admin-tabs .status-tab:hover {
+    background: #edf4fc;
+    color: #2865b8;
+}
+
+.admin-tabs .status-tab.active {
+    background: #306bbd;
+    color: white;
+    border-color: #306bbd;
+}
+
+/* Main two-column layout */
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 325px minmax(0, 1fr);
+    align-items: start;
+    gap: 28px;
+}
+
+.admin-request-list {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.admin-request-list h2 {
+    margin: 0 0 0;
+    color: #243849;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+/* Individual request cards */
+
+.request-list-card {
+    width: 100%;
+    min-height: 170px;
+    margin: 0;
+    padding: 17px 20px;
+    display: block;
+    text-align: left;
+    background: white;
+    color: #243849;
+    border: 1px solid #d7e5ed;
+    border-radius: 11px;
+    box-shadow: none;
+    font-weight: 400;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.request-list-card:hover {
+    background: #f0f5fc;
+    border-color: #8ab0e6;
+    color: #243849;
+}
+
+.request-list-card.selected {
+    background: #eaf1fc;
+    border: 1px solid #3478d5;
+    box-shadow: 0 0 0 1px rgb(52 120 213 / 8%);
+}
+
+.request-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.request-card-top strong {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.request-arrow {
+    color: #3478d5;
+    font-size: 25px;
+}
+
+.request-list-card p {
+    margin: 4px 0;
+    color: #708493;
+    font-size: 12px;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+}
+
+/* Status badges */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 9px;
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-badge.pending {
+    background: #f8efdf;
+    color: #91651f;
+}
+
+.status-badge.accepted {
+    background: #e3f3e9;
+    color: #277548;
+}
+
+.status-badge.denied {
+    background: #f9e8e6;
+    color: #ae4037;
+}
+
+/* Request details panel */
+
+.admin-details {
+    min-width: 0;
+    padding: 25px 28px;
+    background: white;
+    border: 1px solid #d7e5ed;
+    border-radius: 12px;
+}
+
+.request-detail-panel[hidden] {
+    display: none;
+}
+
+.details-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #d7e5ed;
+}
+
+.details-heading h2 {
+    margin: 0 0 4px;
+    color: #243849;
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.details-heading p {
+    margin: 0;
+    color: #8296a4;
+    font-size: 12px;
+}
+
+.details-status {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.details-status small {
+    display: block;
+    color: #8296a4;
+    font-size: 11px;
+}
+
+.details-status .status-badge {
+    margin-top: 5px;
+}
+
+/* Customer information grid */
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px 25px;
+    padding-bottom: 23px;
+    border-bottom: 1px solid #d7e5ed;
+}
+
+.detail-field {
+    min-width: 0;
+}
+
+.detail-field label,
+.detail-description label {
+    display: block;
+    margin: 0 0 5px;
+    color: #708493;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.admin-details input,
+.admin-details textarea {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 3px 0;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: #243849;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+}
+
+.admin-details input:read-only,
+.admin-details textarea:read-only {
+    cursor: default;
+}
+
+.admin-details input:not(:read-only),
+.admin-details textarea:not(:read-only) {
+    padding: 8px;
+    background: #f7fafd;
+    border: 1px solid #8ab0e6;
+}
+
+.admin-details input:focus,
+.admin-details textarea:focus {
+    outline: 2px solid #c5e0ef;
+}
+
+/* Description */
+
+.detail-description {
+    padding: 20px 0;
+    border-bottom: 1px solid #d7e5ed;
+}
+
+.detail-description label {
+    color: #243849;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-details textarea {
+    min-height: 55px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* Photos */
+
+.detail-photos {
+    padding: 18px 0 23px;
+    border-bottom: 1px solid #d7e5ed;
+}
+
+.detail-photos h3 {
+    margin: 0 0 10px;
+    color: #243849;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.request-photo {
+    height: 105px;
+    overflow: hidden;
+    background: #f2f7fa;
+    border: 1px solid #d7e5ed;
+    border-radius: 6px;
+}
+
+.request-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-photos {
+    grid-column: 1 / -1;
+    padding: 25px;
+    text-align: center;
+    background: #f7f8f4;
+    border: 1px solid #d7e5ed;
+    border-radius: 6px;
+    color: #8296a4;
+    font-size: 12px;
+}
+
+/* Edit controls */
+
+.edit-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 17px 0;
+}
+
+.edit-controls button {
+    min-height: 38px;
+    margin: 0;
+    padding: 9px 16px;
+    font-size: 12px;
+}
+
+.edit-request-button {
+    background: white;
+    color: #306bbd;
+    border: 1px solid #306bbd;
+}
+
+.edit-request-button:hover {
+    background: #edf4fc;
+    color: #245b9e;
+}
+
+.save-request-button {
+    background: #306bbd;
+}
+
+.cancel-edit-button {
+    background: white;
+    color: #526a78;
+    border: 1px solid #d7e5ed;
+}
+
+/* Accept and deny actions */
+
+.request-actions {
+    padding-top: 18px;
+    border-top: 1px solid #d7e5ed;
+}
+
+.request-actions > p {
+    margin: 0 0 13px;
+    color: #8296a4;
+    font-size: 12px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.action-buttons button {
+    min-height: 43px;
+    margin: 0;
+    padding: 11px 19px;
+    font-size: 12px;
+}
+
+.accept-button {
+    background: #306bbd;
+    color: white;
+}
+
+.accept-button:hover {
+    background: #245b9e;
+}
+
+.deny-button {
+    background: white;
+    color: #b34037;
+    border: 1px solid #e5b9b5;
+}
+
+.deny-button:hover {
+    background: #fcf0ef;
+    color: #a3322a;
+}
+
+/* Empty state */
+
+.no-requests {
+    padding: 50px 25px;
+    text-align: center;
+    background: white;
+    border: 1px solid #d7e5ed;
+    border-radius: 10px;
+}
+
+.no-requests h2 {
+    margin-bottom: 8px;
+    font-weight: 400;
+}
+
+.no-requests p {
+    color: #8296a4;
+    font-size: 13px;
+}
+
+/* Footer */
+
+.admin-footer {
+    min-height: 90px;
+    padding: 20px 6.6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border-top: 1px solid #d7e5ed;
+}
+
+.admin-footer strong {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.admin-footer p {
+    margin: 5px 0 0;
+    color: #8296a4;
+    font-size: 10px;
+}
+
+.admin-footer > span {
+    color: #8296a4;
+    font-size: 11px;
+}
+
+/* Responsive layout */
+
+@media (max-width: 900px) {
+    .admin-layout {
+        grid-template-columns: 260px minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .admin-details {
+        padding: 20px;
+    }
+
+    .details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .admin-header {
+        padding: 15px 5%;
+        flex-wrap: wrap;
+    }
+
+    .admin-header nav {
+        order: 3;
+        width: 100%;
+        gap: 18px;
+    }
+
+    .admin-header-right {
+        gap: 12px;
+    }
+
+    .admin-main {
+        padding: 30px 16px;
+    }
+
+    .admin-heading h1 {
+        font-size: 29px;
+    }
+
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-request-list {
+        gap: 12px;
+    }
+
+    .request-list-card {
+        min-height: 145px;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .admin-footer {
+        padding: 18px 5%;
+    }
+}
+
+@media (max-width: 420px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .details-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .details-status {
+        text-align: left;
+    }
+
+    .photo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons button {
+        width: 100%;
+    }
+}
