@@ -1,3 +1,4 @@
+import io
 import os
 import re
 import hashlib
@@ -6,10 +7,11 @@ import secrets
 import uuid
 from werkzeug.utils import secure_filename
 from firebase_admin import firestore
+from PIL import Image, ImageOps
 
 from flask import (
     Flask, render_template, request, redirect,
-    url_for, session, jsonify, flash
+    url_for, session, jsonify, flash, abort, Response
 )
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -67,7 +69,224 @@ def firebase_admin_authenticated(email, password):
 def home():
     return render_template('home.html')
 
+# ==============================
+# SERVICE PAGES AND WORK PHOTOS
+# ==============================
 
+# Photos are stored in Firestore, so they must fit in one document (1 MB max).
+SERVICE_PHOTOS = db.collection('ServicePhotos')
+MAX_PHOTO_BYTES = 900 * 1024
+ALLOWED_PHOTO_FORMATS = {'JPEG', 'PNG', 'WEBP'}
+
+# Reject uploads bigger than 20 MB before they are processed.
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
+
+
+@app.errorhandler(413)
+def upload_too_large(error):
+    flash('That photo is too large. Please upload a photo under 20 MB.')
+    if session.get('role') == 'admin':
+        return redirect(url_for('admin_dashboard') + '#work-photos')
+    return redirect(url_for('home'))
+
+# One entry per service page. The key is the page address: /services/<key>
+SERVICES = {
+    'powerwashing': {
+        'name': 'Powerwashing',
+        'icon': '♨',
+        'tagline': 'Clean surfaces, inside and out.',
+        'tags': 'Residential · Commercial',
+        'description': 'Driveways, siding, decks, patios, and more. '
+                       'We blast away dirt, mold, and grime so your '
+                       'property looks like new.',
+    },
+    'yard-clean-up': {
+        'name': 'Yard Clean Up',
+        'icon': '♣',
+        'tagline': 'Yard cleanup and maintenance made easy.',
+        'tags': 'Hedge Trimming · Garden Cleanups · Gutter Cleaning',
+        'description': 'From overgrown hedges to leaf-filled gutters, '
+                       'we get your yard back in shape.',
+    },
+    'junk-removal': {
+        'name': 'Junk Removal',
+        'icon': '♧',
+        'tagline': 'Fast, reliable junk removal.',
+        'tags': 'Bulk Pickup · Dump Trailer Delivery',
+        'description': 'Old furniture, yard debris, or a full clean-out. '
+                       'We haul it away so you do not have to.',
+    },
+    'home-improvement': {
+        'name': 'Home Improvement',
+        'icon': '⌂',
+        'tagline': 'Painting, cleaning, and maintenance to keep your home looking its best.',
+        'tags': 'Carpet Shampooing · Steam Cleaning · Painting · Maintenance',
+        'description': 'Fresh paint, clean carpets, and the small fixes '
+                       'that make a home feel cared for.',
+    },
+}
+
+
+def shrink_photo(uploaded_file):
+    """Resize an uploaded photo to a web-friendly JPEG that fits in Firestore.
+
+    Returns the JPEG bytes, or None if the file is not a supported image.
+    """
+    try:
+        image = Image.open(uploaded_file.stream)
+        if image.format not in ALLOWED_PHOTO_FORMATS:
+            return None
+        image = ImageOps.exif_transpose(image)  # keep phone photos upright
+    except Exception:
+        return None
+
+    # JPEG has no transparency, so put transparent images on white.
+    if image.mode in ('RGBA', 'LA', 'P'):
+        image = image.convert('RGBA')
+        background = Image.new('RGB', image.size, 'white')
+        background.paste(image, mask=image.split()[-1])
+        image = background
+    else:
+        image = image.convert('RGB')
+
+    for max_side in (1600, 1200, 900):
+        image.thumbnail((max_side, max_side))
+        for quality in (85, 75, 65):
+            buffer = io.BytesIO()
+            image.save(buffer, 'JPEG', quality=quality, optimize=True)
+            if buffer.tell() <= MAX_PHOTO_BYTES:
+                return buffer.getvalue()
+
+    return None
+
+
+def load_service_photos(service_name=None):
+    """Return photo info (without the image data), newest first."""
+    query = SERVICE_PHOTOS
+    if service_name:
+        query = query.where('Service', '==', service_name)
+
+    photos = []
+    for document in query.select(['Service', 'Caption', 'CreatedAt']).stream():
+        photo = document.to_dict() or {}
+        photo['PhotoID'] = document.id
+        photos.append(photo)
+
+    photos.sort(
+        key=lambda item: (
+            item['CreatedAt'].timestamp()
+            if hasattr(item.get('CreatedAt'), 'timestamp')
+            else 0
+        ),
+        reverse=True
+    )
+    return photos
+
+
+# SERVICE PAGE (photos of past work + request form)
+@app.route('/services/<slug>')
+def service_page(slug):
+    service = SERVICES.get(slug)
+    if not service:
+        abort(404)
+
+    try:
+        photos = load_service_photos(service['name'])
+    except Exception:
+        app.logger.exception('Loading service photos failed.')
+        photos = []
+
+    # Pre-fill the request form for logged-in customers.
+    customer = None
+    user_id = session.get('user_id')
+    if user_id and session.get('role') == 'customer':
+        try:
+            customer_document = CUSTOMERS.document(str(user_id)).get()
+            if customer_document.exists:
+                customer = customer_document.to_dict()
+        except Exception:
+            app.logger.exception('Loading customer for service page failed.')
+
+    return render_template(
+        'service.html',
+        slug=slug,
+        service=service,
+        photos=photos,
+        customer=customer
+    )
+
+
+# SHOW ONE PHOTO
+@app.route('/photos/<photo_id>')
+def service_photo(photo_id):
+    document = SERVICE_PHOTOS.document(photo_id).get()
+    if not document.exists:
+        abort(404)
+
+    image_data = (document.to_dict() or {}).get('Image')
+    if not image_data:
+        abort(404)
+
+    response = Response(bytes(image_data), mimetype='image/jpeg')
+    response.headers['Cache-Control'] = 'public, max-age=86400'
+    return response
+
+
+# ADMIN: UPLOAD A PHOTO
+@app.route('/admin/photos/upload', methods=['POST'])
+def upload_service_photo():
+    if session.get('role') != 'admin':
+        flash('You must be logged in as an admin.')
+        return redirect(url_for('login'))
+
+    service_name = request.form.get('Service', '').strip()
+    caption = request.form.get('Caption', '').strip()[:120]
+    uploaded_file = request.files.get('Photo')
+
+    valid_names = [service['name'] for service in SERVICES.values()]
+    if service_name not in valid_names:
+        flash('Please choose which service the photo is for.')
+        return redirect(url_for('admin_dashboard') + '#work-photos')
+
+    if not uploaded_file or not uploaded_file.filename:
+        flash('Please choose a photo to upload.')
+        return redirect(url_for('admin_dashboard') + '#work-photos')
+
+    image_data = shrink_photo(uploaded_file)
+    if image_data is None:
+        flash('That file could not be used. Please upload a JPG, PNG, or WEBP photo.')
+        return redirect(url_for('admin_dashboard') + '#work-photos')
+
+    try:
+        SERVICE_PHOTOS.add({
+            'Service': service_name,
+            'Caption': caption,
+            'Image': image_data,
+            'CreatedAt': firestore.SERVER_TIMESTAMP
+        })
+        flash(f'Photo added to {service_name}.')
+    except Exception:
+        app.logger.exception('Photo upload failed.')
+        flash('Unable to upload the photo. Please try again.')
+
+    return redirect(url_for('admin_dashboard') + '#work-photos')
+
+
+# ADMIN: DELETE A PHOTO
+@app.route('/admin/photos/<photo_id>/delete', methods=['POST'])
+def delete_service_photo(photo_id):
+    if session.get('role') != 'admin':
+        flash('You must be logged in as an admin.')
+        return redirect(url_for('login'))
+
+    try:
+        SERVICE_PHOTOS.document(photo_id).delete()
+        flash('Photo deleted.')
+    except Exception:
+        app.logger.exception('Photo delete failed.')
+        flash('Unable to delete the photo. Please try again.')
+
+    return redirect(url_for('admin_dashboard') + '#work-photos')
 # LOGIN
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -272,12 +491,20 @@ def admin_dashboard():
         return render_template(
             'admin_dashboard.html',
             requests=[],
-            error='Unable to load work requests. Please try again.'
+            photos=[],
+            services=SERVICES,
+            error='Unable to load work requests. Please try again later.'
         ), 503
-
+    try:
+        photos = load_service_photos()
+    except Exception:
+        app.logger.exception("Loading work photos failed.")
+        photos = []
     return render_template(
         'admin_dashboard.html',
-        requests=requests
+        requests=requests,
+        photos=photos,
+        services=SERVICES
     )
 
 

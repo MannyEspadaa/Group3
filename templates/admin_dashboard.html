@@ -204,6 +204,70 @@
                 <p>Submitted customer requests will appear here.</p>
             </div>
         {% endif %}
+
+        <!-- WORK PHOTOS -->
+        <div class="admin-photos" id="work-photos">
+            <div class="admin-photos-heading">
+                <h2>Work photos</h2>
+                <p>Photos you upload here appear on each service's page for customers to see.</p>
+            </div>
+
+            <form class="photo-upload-form" method="POST" enctype="multipart/form-data"
+                  action="{{ url_for('upload_service_photo') }}">
+                <div class="detail-field">
+                    <label for="photo-service">Service</label>
+                    <select id="photo-service" name="Service" required>
+                        <option value="">Choose a service</option>
+                        {% for slug, service in services.items() %}
+                            <option value="{{ service.name }}">{{ service.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="detail-field">
+                    <label for="photo-file">Photo (JPG, PNG, or WEBP)</label>
+                    <input id="photo-file" type="file" name="Photo"
+                           accept="image/jpeg,image/png,image/webp" required>
+                </div>
+                <div class="detail-field">
+                    <label for="photo-caption">Caption (optional)</label>
+                    <input id="photo-caption" type="text" name="Caption" maxlength="120"
+                           placeholder="e.g. Driveway before and after">
+                </div>
+                <button type="submit">Upload photo</button>
+            </form>
+
+            {% for slug, service in services.items() %}
+                {% set service_photos = photos | selectattr('Service', 'equalto', service.name) | list %}
+                <div class="admin-photo-group">
+                    <h3>
+                        {{ service.name }}
+                        <small>({{ service_photos | length }})</small>
+                        <a href="{{ url_for('service_page', slug=slug) }}" target="_blank" rel="noopener">View page ›</a>
+                    </h3>
+
+                    {% if service_photos %}
+                        <div class="work-photo-grid">
+                            {% for photo in service_photos %}
+                                <figure class="work-photo">
+                                    <img src="{{ url_for('service_photo', photo_id=photo.PhotoID) }}"
+                                         alt="{{ photo.Caption or service.name ~ ' job' }}" loading="lazy">
+                                    <figcaption>
+                                        <span>{{ photo.Caption or 'No caption' }}</span>
+                                        <form method="POST"
+                                              action="{{ url_for('delete_service_photo', photo_id=photo.PhotoID) }}"
+                                              onsubmit="return confirm('Delete this photo? This cannot be undone.');">
+                                            <button type="submit" class="photo-delete-button">Delete</button>
+                                        </form>
+                                    </figcaption>
+                                </figure>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="admin-photo-empty">No photos yet.</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
     </main>
 
     <footer class="admin-footer">

@@ -1426,3 +1426,300 @@ button:disabled {
 .request-list-card[hidden] {
     display: none !important;
 }
+
+/* ==============================
+   SERVICE PAGES AND WORK PHOTOS
+   ============================== */
+
+/* Clickable service cards on the home page */
+.service-card-link {
+    color: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.service-card-link:hover {
+    color: inherit;
+    border-color: #8ab0e6;
+    box-shadow: 0 6px 18px rgb(36 56 73 / 8%);
+    transform: translateY(-2px);
+}
+
+.service-card-link:focus-visible {
+    outline: 3px solid #c5e0ef;
+    outline-offset: 2px;
+}
+
+/* Service page heading */
+.service-back-link {
+    display: inline-block;
+    margin-bottom: 18px;
+    font-size: 13px;
+}
+
+.service-page-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.service-page-heading h1 {
+    margin-bottom: 8px;
+    color: #243849;
+    font-size: clamp(30px, 4vw, 36px);
+    font-weight: 400;
+}
+
+.service-page-heading p {
+    max-width: 640px;
+    margin: 0 0 8px;
+    color: #708493;
+    font-size: 14px;
+}
+
+.service-page-tags {
+    color: #4b87a8;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Photo gallery */
+.work-gallery {
+    margin-bottom: 40px;
+}
+
+.work-gallery-heading {
+    margin-bottom: 16px;
+}
+
+.work-gallery-heading h2 {
+    color: #243849;
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.work-gallery-heading p {
+    margin: 4px 0 0;
+    color: #708493;
+    font-size: 13px;
+}
+
+.work-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.work-photo {
+    margin: 0;
+    overflow: hidden;
+    background: white;
+    border: 1px solid #d7e5ed;
+    border-radius: 10px;
+}
+
+.work-photo a {
+    display: block;
+}
+
+.work-photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background: #e9f4fa;
+}
+
+.work-photo figcaption {
+    padding: 10px 12px;
+    color: #4a6070;
+    font-size: 13px;
+}
+
+.work-photo-empty {
+    padding: 40px 20px;
+    background: white;
+    border: 1px dashed #c2d6e2;
+    border-radius: 10px;
+    color: #8296a4;
+    text-align: center;
+}
+
+.work-photo-empty p {
+    margin: 0;
+}
+
+/* Request area on the service page */
+.service-request-heading h2 {
+    color: #243849;
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.service-request-heading p {
+    margin-top: 4px;
+}
+
+.service-request-cta {
+    padding: 28px;
+    background: white;
+    border: 1px solid #d7e5ed;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.service-request-cta p {
+    margin: 0;
+    color: #4a6070;
+}
+
+/* Admin dashboard: work photos */
+.admin-photos {
+    margin-top: 40px;
+    padding: 25px 28px;
+    background: white;
+    border: 1px solid #d7e5ed;
+    border-radius: 12px;
+}
+
+.admin-photos-heading {
+    margin-bottom: 18px;
+}
+
+.admin-photos-heading h2 {
+    color: #243849;
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.admin-photos-heading p {
+    margin: 4px 0 0;
+    color: #708493;
+    font-size: 13px;
+}
+
+.photo-upload-form {
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) minmax(200px, 1.3fr) minmax(200px, 1.5fr) auto;
+    align-items: end;
+    gap: 14px;
+    padding-bottom: 22px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #d7e5ed;
+}
+
+.photo-upload-form select,
+.photo-upload-form input {
+    width: 100%;
+    min-height: 40px;
+    margin: 0;
+    padding: 8px;
+    background: #f7fafd;
+    border: 1px solid #c2d6e2;
+    border-radius: 6px;
+    color: #243849;
+    font: inherit;
+    font-size: 13px;
+}
+
+.photo-upload-form button {
+    margin: 0;
+    min-height: 40px;
+}
+
+.admin-photo-group {
+    padding: 18px 0;
+    border-bottom: 1px solid #edf2f5;
+}
+
+.admin-photo-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.admin-photo-group h3 {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0 0 12px;
+    color: #244e68;
+    font-size: 16px;
+}
+
+.admin-photo-group h3 small {
+    color: #8296a4;
+    font-weight: 400;
+}
+
+.admin-photo-group h3 a {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.admin-photo-group .work-photo-grid {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+}
+
+.admin-photo-group figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.admin-photo-group figcaption span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.photo-delete-button {
+    flex-shrink: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 4px 10px;
+    background: white;
+    border: 1px solid #e8c4c0;
+    border-radius: 5px;
+    color: #a33b32;
+    font-size: 12px;
+}
+
+.photo-delete-button:hover {
+    background: #fcebea;
+    color: #a33b32;
+}
+
+.admin-photo-empty {
+    margin: 0;
+    color: #8296a4;
+    font-size: 13px;
+}
+
+@media (max-width: 900px) {
+    .photo-upload-form {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+    .service-page-heading {
+        gap: 14px;
+    }
+
+    .photo-upload-form {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-photos {
+        padding: 20px 16px;
+    }
+
+    .work-photo-grid,
+    .admin-photo-group .work-photo-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+}
